@@ -1,0 +1,70 @@
+方法一：在初始化时保存ApplicationContext对象
+方法二：通过Spring提供的工具类获取ApplicationContext对象 WebApplicationContextUtils
+方法三：继承自抽象类ApplicationObjectSupport
+方法四：继承自抽象类WebApplicationObjectSupport
+方法五：实现接口ApplicationContextAware
+
+方法一：在初始化时保存ApplicationContext对象 
+方法二：通过Spring提供的utils类获取ApplicationContext对象 
+方法三：继承自抽象类ApplicationObjectSupport 
+方法四：继承自抽象类WebApplicationObjectSupport 
+方法五：实现接口ApplicationContextAware 
+方法六：通过Spring提供的ContextLoader
+
+
+DefaultBeanDefinitionDocumentReader ->preProcessXml(root)
+									->postProcessXml(root)
+
+子类实现DefaultBeanDefinitionDocumentReader 实现2个接口 模板方法
+
+
+HandlerExecutionChain -> applyPreHandle()
+
+DispatcherServlet -> if (!mappedHandler.applyPreHandle(processedRequest, response)) {
+					return;
+				}
+
+BootstrapApplicationListener	
+ParentContextApplicationContextInitializer			
+ManagementContextResolver	
+AutowiredAnnotationBeanPostProcessor
+ContextLoader.properties -> org.springframework.web.context.support.XmlWebApplicationContext
+
+springApplication可以读取不同种类的源文件：
+
+类- java类由AnnotatedBeanDefinitionReader加载。
+Resource - xml资源文件由XmlBeanDefinitionReader读取, 或者groovy脚本由GroovyBeanDefinitionReader读取
+Package - java包文件由ClassPathBeanDefinitionScanner扫描读取。
+CharSequence - 字符序列可以是类名、资源文件、包名，根据不同方式加载。如果一个字符序列不可以解析程序到类，也不可以解析到资源文件，那么就认为它是一个包。
+
+```
+DefaultResourceLoader
+ResourcePatternResolver 
+
+SpringServletContainerInitializer
+```
+
+
+
+### springmvc初始化
+
+```
+SpringServletContainerInitializer -> ServletContainerInitializer
+ 
+AbstractContextLoaderInitializer -> WebApplicationInitializer
+
+AbstractDispatcherServletInitializer -> AbstractContextLoaderInitializer
+
+```
+
+
+
+### Spring Context解析
+
+```java
+AbstractApplicationContext -> invokeBeanFactoryPostProcessors
+PostProcessorRegistrationDelegate -> invokeBeanFactoryPostProcessors
+ConfigurationClassPostProcessor -> postProcessBeanFactory -> processConfigBeanDefinitions
+ConfigurationClassParser -> parse -> processDeferredImportSelectors
+```
+

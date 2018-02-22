@@ -1,0 +1,1 @@
+ GET /v2/meters/cpu_util/statistics?q.field=resource_id&q.field=timestamp&q.field=timestamp&q.op=eq&q.op=ge&q.op=lt&q.value=3f935f95-2260-4f98-aacf-218961251a08&q.value=2017-10-16T16%3A00%3A00.957Z&q.value=2017-10-23T16%3A00%3A00.957Z HTTP/1.1

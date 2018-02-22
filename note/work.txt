@@ -1,0 +1,14 @@
+ceilometer sample-list -q resource='97bfe39b-2fe9-4540-bfcf-086e2d81d51e'
+
+18c6e521-e71b-444f-8cd0-0a97fe92717d
+source keystonerc_admin
+
+d095cf45-95ad-4048-a188-d8d2aabb6300
+
+
+
+ceilometer statistics -m  cpu.util -q resource="08335cdc-de8a-4e3a-9bf0-e30a52c5d4a.cpu.util;timestamp<2017-10-29T08:34:37;timestamp>2017--15T01:34:37"
+
+http://192.168.14.57:8777/v2/meters/memory.util/statistics?q.field=resource_id&q.field=timestamp&q.field=
+timestamp&q.op=eq&q.op=ge&q.op=lt&q.value=08335cdc-de8a-4e3a-9bf0-e30a52c5d4aa&q.
+value=2017-11-05T16%3A00%3A00.219Z&q.value=2017-11-06T16%3A00%3A00.221Z

@@ -1,0 +1,13 @@
+alter table test change id  id int AUTO_INCREMENT;
+
+MapperScannerConfigurer 属性不支持使用了 PropertyPlaceholderConfigurer 的属 性替换,因为会在 Spring 其中之前来它加载。
+但是,你可以使用 PropertiesFactoryBean 和 SpEL 表达式来作为替代。
+
+alter table t1 add column addr varchar(20) not null;
+
+连接池一般配置这几个值就好了
+初始连接数
+最小连接数
+最大连接池
+最大空闲时间
+最大空闲连接池
