@@ -11,3 +11,14 @@ alter table t1 add column addr varchar(20) not null;
 最大连接池
 最大空闲时间
 最大空闲连接池
+
+### mysql日志
+
+* 重做日志（redo log）
+* 回滚日志（undo log）
+* 二进制日志（binlog）
+* 错误日志（errorlog）
+* 慢查询日志（slow query log）
+* 一般查询日志（general log）
+* 中继日志（relay log）
+

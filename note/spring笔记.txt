@@ -54,7 +54,6 @@ SpringServletContainerInitializer -> ServletContainerInitializer
 AbstractContextLoaderInitializer -> WebApplicationInitializer
 
 AbstractDispatcherServletInitializer -> AbstractContextLoaderInitializer
-
 ```
 
 
@@ -66,5 +65,146 @@ AbstractApplicationContext -> invokeBeanFactoryPostProcessors
 PostProcessorRegistrationDelegate -> invokeBeanFactoryPostProcessors
 ConfigurationClassPostProcessor -> postProcessBeanFactory -> processConfigBeanDefinitions
 ConfigurationClassParser -> parse -> processDeferredImportSelectors
+```
+
+### spring bean加载
+
+```
+转换对应beanName
+尝试从缓存中加载单例
+bean的实例化
+原型模式的依赖检查
+检测parentBeanFactory
+将存储XML配置文件的GenericBeanDefinition转换为RootBeanDefinition
+寻找依赖
+针对不同的scope进行bean的创建
+类型转换
+```
+
+####缓存中获取bean
+
+![spring](C:\Users\Administrator\Desktop\spring.png)
+
+```
+AbstractBeanFactory -> getObjectForBeanInstance:检测当前bean是否是FactoryBean类型的bean，如果是，那么调用该bean对应的FactoryBean实例中的getObject()作为返回值
+1对FactoryBean正确性的验证
+2对非FactoryBean不做任何处理
+3对bean进行转换
+4将从Factory中解析bean的工作委托给getObjectFromFactoryBean
+```
+
+#### BeanPostProcessor
+
+```
+Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException;
+Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException;
+```
+
+#### 实例化的前置处理
+
+```
+AbstractAutowireCapableBeanFactory -> applyBeanPostProcessorsAfterInitialization
+InstantiationAwareBeanPostProcessor -> postProcessBeforeInstantiation
+BeanPostProcessor -> postProcessAfterInitialization
+```
+
+##### 实例化前的后处理器应用
+
+```
+bean的实例化前调用，也就是降AbstractBeanDefinition转换为BeanWrapper前的处理。给子类一个修改BeanDefinition的机会
+```
+
+##### 实例化后的后处理器应用
+
+##### 循环依赖
+
+1构造器循环依赖
+
+2setter循环依赖
+
+##### 创建bean
+
+```
+1)如果是单例则需要首先清楚缓存
+2）实例化bean，将BeanDefinition转换为BeanWrapper
+3）MergedBeanDefinitionPostProcessor的应用
+bean合并后的处理，Autowired注解正是通过此方法实现诸如类型的预解析
+4）依赖处理
+5）属性填充
+6）循环依赖检查
+7）注册DisposableBean
+8)完成创建并返回
+```
+
+![QQ截图20180226011141](C:\Users\Administrator\Desktop\QQ截图20180226011141.png)
+
+###### 实例化策略
+
+````
+SimpleInstantiationStrategy -> instantiate
+CglibSubclassingInstantiationStrategy -> instantiateWithMethodInjection
+````
+
+###### 属性注入
+
+* ```autowireByName```
+* ```autowireByType```
+
+
+#### AOP
+
+* 连接点（Joinpoint）
+* 切点（Pointcut）
+* 增强（Advice）
+* 目标对象（Target）
+* 引入（Introduction）:引入是一种特殊的增强，它为类添加一些属性和方法。
+* 织入（Weaving）:将增强添加到目标类的具体连接点上的过程
+* 切面（Aspect）:切面由切点和增强（引入）组成，它既包括横切逻辑的定义，也包括连接点的定义
+
+##### 增强（AOP联盟）
+
+```
+前置增强：BeforeAdvice
+后置增强：AfterReturningAdvice
+环绕增强：MethodInterceptor
+异常抛出增强：ThrowsAdvice
+引介增强：IntroductionInterceptor 必须cglib
+```
+
+```
+ProxyFactory
+AopProxyFactory -> JdkDynamicAopProxy
+                -> CglibAopProxy
+ProxyFactoryBean                
+```
+
+##### 切面
+
+```
+Pointcut
+ClassFilter:定位到特定类上
+MethodMatcher：定位到特定方法上
+```
+
+###### 匹配器
+
+* 静态方法匹配器
+* 动态方法匹配器
+
+```
+静态方法切点：StaticMethodMatcherPointcut
+动态方法切点：DynamicMethodMatcherPointcut
+注解切点：AnnotationMatchingPointcut
+表达式切点：ExpressionPointcut
+流程切点：ControlFlowPointcut
+复合切点：ComposablePointcut
+```
+
+###### 类型
+
+```
+一般切面：Advisor
+切点切面：PointcutAdvisor
+引介切面：IntroductionAdvisor
 ```
 
