@@ -1,3 +1,10 @@
+```
+每个缓存行有一个状态，MSIE，表示4个状态，如果发现是失效的话，就从内存获取数据
+CAS比volatile多了cmgx
+```
+
+FATAL ERROR in native method: JDWP ExceptionOccurred, jvmtiError=AGENT_ERROR_INVALID_EVENT_TYPE(204)
+
 在类名上加个注解
 @JsonNaming(PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy.class)
 jmap -histo pid | head -n20 看看你们对象分布
@@ -146,14 +153,14 @@ public static void main(String[] args) throws InterruptedException {
 
         // Eden不够, 但是Old区空间是够的, 所以这时候并不会触发Young GC(Minor GC)
         byte[] byte10m1 = new byte[10 * 1024 * 1024];
-
+    
         System.out.println("hello world");
         Thread.sleep(20000);
     }
 
 -XX:+UseCMSCompactAtFullCollection XX:CMSFullGCsBeforeCompaction=0 而且默认就是开启且每次full 
 gc后整理old区内存碎片问题 cms gc不会整理内存碎片，但是full gc会	
-	
+​	
 1.对象默认都是从Eden区分配，但是遇到大对象会直接在Old区分配，此时不会进行YGC
 2.这个大对象是指：大于PretenureSizeThreshold或者大于Eden
 3.但是如果遇到待分配对象不是大对象，Eden区剩余空间不足，此时就会发生YGC
@@ -221,7 +228,7 @@ SERVER_ARG="-Xbootclasspath/a:$JAVA_HOME/lib/tools.jar:/data/hotswap/ProfilerSDK
 
  -Djava.util.Arrays.useLegacyMergeSort=true/false
  System.setProperty("java.util.Arrays.useLegacyMergeSort","rue/false")
- 
+
  对cms的回收默认值有疑问的，
  可以查看该方法https://github.com/dmlloyd/openjdk/blob/jdk9/jdk9/hotspot/src/share/vm/gc/cms/concurrentMarkSweepGeneration.cpp#L265
   大家都知道对于设置使用cms回收器的，有一个background式的GC。（不清楚的可以查看笨神的这篇文章http://lovestblog.cn/blog/2015/05/07/system-gc/）
