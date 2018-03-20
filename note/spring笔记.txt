@@ -1,3 +1,6 @@
+###获取ApplicationContext
+
+```
 方法一：在初始化时保存ApplicationContext对象
 方法二：通过Spring提供的工具类获取ApplicationContext对象 WebApplicationContextUtils
 方法三：继承自抽象类ApplicationObjectSupport
@@ -10,18 +13,17 @@
 方法四：继承自抽象类WebApplicationObjectSupport 
 方法五：实现接口ApplicationContextAware 
 方法六：通过Spring提供的ContextLoader
+```
 
 	DefaultBeanDefinitionDocumentReader ->preProcessXml(root)
 							            ->postProcessXml(root)
 
 子类实现DefaultBeanDefinitionDocumentReader 实现2个接口 模板方法
 
-
-HandlerExecutionChain -> applyPreHandle()
-
-DispatcherServlet -> if (!mappedHandler.applyPreHandle(processedRequest, response)) {
-					return;
-				}
+	HandlerExecutionChain -> applyPreHandle()
+	DispatcherServlet -> if (!mappedHandler.applyPreHandle(processedRequest, response)) {
+	    return;
+	}
 
 BootstrapApplicationListener	
 ParentContextApplicationContextInitializer			
@@ -39,7 +41,6 @@ CharSequence - 字符序列可以是类名、资源文件、包名，根据不�
 ```
 DefaultResourceLoader
 ResourcePatternResolver 
-
 SpringServletContainerInitializer
 ```
 
@@ -47,13 +48,9 @@ SpringServletContainerInitializer
 
 ```
 SpringServletContainerInitializer -> ServletContainerInitializer
- 
 AbstractContextLoaderInitializer -> WebApplicationInitializer
-
 AbstractDispatcherServletInitializer -> AbstractContextLoaderInitializer
 ```
-
-
 
 ### Spring Context解析
 
@@ -63,6 +60,19 @@ PostProcessorRegistrationDelegate -> invokeBeanFactoryPostProcessors
 ConfigurationClassPostProcessor -> postProcessBeanFactory -> processConfigBeanDefinitions
 ConfigurationClassParser -> parse -> processDeferredImportSelectors
 ```
+
+####容器扩展功能
+
+```
+AbstractApplicationContext -> refresh
+ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory()
+prepareBeanFactory(beanFactory) 对BeanFactory进行各种功能进行填充，@Qualifier和@Autowired这一步增加支持
+QualifierAnnotationAutowireCandidateResolver -> 解析Qualifier
+SimpleAutowireCandidateResolver -> 采用autowireByType注入
+CustomEditorConfigurer
+```
+
+
 
 ### spring bean加载
 
@@ -147,6 +157,30 @@ CglibSubclassingInstantiationStrategy -> instantiateWithMethodInjection
 * ```autowireByName```
 * ```autowireByType```
 
+
+#####初始化bean
+
+```
+AbstractAutowireCapableBeanFactory -> initializeBean
+invokeAwareMethods:对特殊的bean处理：Aware、BeanClassLoaderAware、BeanFactoryAware
+applyBeanPostProcessorsBeforeInitialization:应用后处理器
+invokeInitMethods：激活用户自定义的init方法
+applyBeanPostProcessorsAfterInitialization：后处理器应用
+```
+
+######激活自定义init方法
+
+```
+先执行afterPropertiesSet，init-method后执行
+```
+
+##### 注册DisposableBean
+
+也可以注册后处理器`DestructionAwareBeanPostProcessor`统一处理bean的销毁方法
+
+```
+AbstractBeanFactory -> registerDisposableBeanIfNecessary
+```
 
 ###AOP
 
