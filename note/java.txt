@@ -1,3 +1,15 @@
+### 类的设计原则
+
+```
+依赖倒置原则－Dependency Inversion Principle (DIP) 
+里氏替换原则－Liskov Substitution Principle (LSP) 
+接口分隔原则－Interface Segregation Principle (ISP) 
+单一职责原则－Single Responsibility Principle (SRP) 
+开闭原则－The Open-Closed Principle (OCP)
+```
+
+ 
+
 http://cenalulu.github.io/mysql/mysql-mojibake/
 
 在 Java 中除了最为基础的东西之外，你只要看三样东西就可以了：
