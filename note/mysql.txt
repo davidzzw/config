@@ -1,3 +1,24 @@
+#### 数据库和实例
+
+```
+在 Unix 上，启动一个 MySQL 实例往往会产生两个进程，mysqld 就是真正的数据库服务守护进程，而 mysqld_safe 是一个用于检查和设置 mysqld 启动的控制程序，它负责监控 MySQL 进程的执行，当 mysqld 发生错误时，mysqld_safe 会对其状态进行检查并在合适的条件下重启。
+```
+
+#### 数据的存储
+
+```
+在 InnoDB 存储引擎中，所有的数据都被逻辑地存放在表空间中，表空间（tablespace）是存储引擎中最高的存储逻辑单位，在表空间的下面又包括段（segment）、区（extent）、页（page）
+```
+
+#### 锁的算法
+
+```
+Record Lock、Gap Lock 和 Next-Key Lock
+
+```
+
+
+
 alter table test change id  id int AUTO_INCREMENT;
 
 MapperScannerConfigurer 属性不支持使用了 PropertyPlaceholderConfigurer 的属 性替换,因为会在 Spring 其中之前来它加载。

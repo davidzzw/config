@@ -9,6 +9,15 @@ kill -7 pid
 elsearch
 -d
 
+#### 查询
+
+* 布尔匹配查询
+* 短语匹配查询(match_phrase)
+* 短语前缀匹配查询(match_phrase_prefix)
+* 多字段匹配查询
+
+
+
 safe_info/safe_info/_delete_by_query?conflicts=proceed //删除type下的所有数据
 {
   "query": {
@@ -55,31 +64,31 @@ add_field => {
 172.20.7.49:9200/test/time/_mapping?pretty" -d '   put
 {
 	"time": {
-            "properties": {
-                "time": {
-                    "type": "date",
-                    "format": "yyyy-MM-dd hh:mm:ss"
-                }
-            }
-        }
+	        "properties": {
+	            "time": {
+	                "type": "date",
+	                "format": "yyyy-MM-dd hh:mm:ss"
+	            }
+	        }
+	    }
 }
 			"level": {
-                "type": "string",
-                 "index": "not_analyzed"
-            },
+	            "type": "string",
+	             "index": "not_analyzed"
+	        },
 			"client": {
-               "type": "string",
-                "index": "not_analyzed"
-            },
-        	"data": {
-                "type": "string",
-                "index": "not_analyzed
-            },
+	           "type": "string",
+	            "index": "not_analyzed"
+	        },
+	    	"data": {
+	            "type": "string",
+	            "index": "not_analyzed
+	        },
 	        "time": {
 	             "type": "date",
 	             "format": "yyyy-MM-dd hh:mm:ss"
 	        }
-			
+
 
 范围查找
 172.20.7.49:9200/test/time/_search   post
@@ -134,8 +143,8 @@ properties": {
                     "type": "date"
                 }
             }
-			
-			{
+    		
+    		{
   "template": "my_index",
   "order": 1,
   "settings": {
@@ -203,15 +212,15 @@ properties": {
               } 
             }], 
             "properties" : { 
-				"host": {"type": "string","index": "not_analyzed"},
-				"index": {"type": "string","index": "not_analyzed"},
-				"type": {"type": "string","index": "not_analyzed"},
+    			"host": {"type": "string","index": "not_analyzed"},
+    			"index": {"type": "string","index": "not_analyzed"},
+    			"type": {"type": "string","index": "not_analyzed"},
                 "@timestamp" : { "type" : "date"}, 
                 "@version" : { "type" : "integer", "index" : "not_analyzed" }, 
-				"level": {"type": "string","index": "not_analyzed"},
-				"client": {"type": "string","index": "not_analyzed"},
-				"data": {"type": "string","index": "not_analyzed"},
-				"time":{"type":"date","format": "yyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"}
+    			"level": {"type": "string","index": "not_analyzed"},
+    			"client": {"type": "string","index": "not_analyzed"},
+    			"data": {"type": "string","index": "not_analyzed"},
+    			"time":{"type":"date","format": "yyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"}
             } 
         } 
     } 
