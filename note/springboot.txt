@@ -52,8 +52,6 @@ org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration
 ```
 
-
-
 # spring-boot-loader
 
 ```

@@ -8,8 +8,6 @@ HystrixCircuitBreakerConfiguration -> HystrixCommandAspect
 HystrixCommandAspect -> HystrixCommand
 ```
 
-
-
 ```
 ConfigFileApplicationListener
 ```
