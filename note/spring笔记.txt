@@ -1,4 +1,12 @@
-###获取ApplicationContext
+###注入和装配
+
+```
+ 依赖注入的本质就是装配，装配是依赖注入的具体行为
+ 装配分为四种：byName, byType, constructor, autodetect。byName就是会将与属性的名字一样的bean进行装配。byType就是将同属性一样类型的bean进行装配。constructor就是通过构造器来将类型与参数相同的bean进行装配。autodetect是constructor与byType的组合，会先进行constructor，如果不成功，再进行byType
+ 创建应用对象之间协作关系的行为称为装配。也就是说当一个对象的属性是另一个对象时，实例化时，需要为这个对象属性进行实例化。这就是装配
+```
+
+###获取ApplicationContexts
 
 ```
 方法一：在初始化时保存ApplicationContext对象
@@ -71,8 +79,6 @@ QualifierAnnotationAutowireCandidateResolver -> 解析Qualifier
 SimpleAutowireCandidateResolver -> 采用autowireByType注入
 CustomEditorConfigurer
 ```
-
-
 
 ### spring bean加载
 
@@ -181,6 +187,48 @@ applyBeanPostProcessorsAfterInitialization：后处理器应用
 ```
 AbstractBeanFactory -> registerDisposableBeanIfNecessary
 ```
+
+#####各注解对应的BeanPostProcessor
+
+```
+Autowired -> AutowiredAnnotationBeanPostProcessor
+Required -> RequiredAnnotationBeanPostProcessor
+Resource、PostConstruct、PreDestroy -> CommonAnnotationBeanPostProcessor
+PersistenceContext -> PersistenceAnnotationBeanPostProcessor
+
+使用<context:annotation- config/>隐式地向 Spring容器注册AutowiredAnnotationBeanPostProcessor、RequiredAnnotationBeanPostProcessor、CommonAnnotationBeanPostProcessor以及PersistenceAnnotationBeanPostProcessor这4个BeanPostProcessor
+```
+
+#####context:component-scan源码分析
+
+```
+<context:component-scan> 
+DefaultBeanDefinitionDocumentReader这个类，doRegisterBeanDefinitions这个方法实现解析配置文件的Bean，这边已经读取进来形成Document 形式存储，然后开始解析Bean,是由BeanDefinitionParserDelegate类实现的，BeanDefinitionParserDelegate完成具体Bean的解析（例如：bean标签、import标签等）
+
+NamespaceHandler和BeanDefinitionParser -> ComponentScanBeanDefinitionParser ->解析<context:component-scan>标签
+ -> ComponentScanBeanDefinitionParser.doScan
+ ClassPathBeanDefinitionScanner -> 由这个类来实现扫描包下的class和jar文件并把注解的Bean包装成BeanDefinition
+ 
+ 进行扫描注解并包装成BeanDefinition是ComponentScanBeanDefinitionParser由父类ClassPathScanningCandidateComponentProvider的方法findCandidateComponents实现的
+ 
+ 怎么根据packageSearchPath获取包对应下的class路径，是通过PathMatchingResourcePatternResolver类，findAllClassPathResources(locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length()));获取配置包下的class路径并封装成Resource，实现也是getClassLoader().getResources(path)
+ 
+ isCandidateComponent实现的标签是里配置的<context:exclude-filter>指定的不扫描包，<context:exclude-filter>指定的扫描包的过滤
+```
+
+##### mvc:annotation-driven
+
+```
+AnnotationDrivenBeanDefinitionParser
+
+会自动注册DefaultAnnotationHandlerMapping与AnnotationMethodHandlerAdapter 
+3.1以上
+ DefaultAnnotationHandlerMapping -> RequestMappingHandlerMapping 
+  AnnotationMethodHandlerAdapter -> RequestMappingHandlerAdapter 
+  AnnotationMethodHandlerExceptionResolver -> ExceptionHandlerExceptionResolver 
+```
+
+ 
 
 ###AOP
 
