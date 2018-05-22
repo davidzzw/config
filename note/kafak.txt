@@ -12,7 +12,7 @@ kafka-console-producer.sh --broker-list localhost:9092 --topic test
 
 ###4 Start a consumer
 
-kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginnin
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
 
 ###5 修改Topic
 
@@ -55,4 +55,9 @@ DescribeGroup请求：显示组的所有信息，包括成员信息，协议名�
 ```
 
 
+
+```
+./kafka-run-class.sh kafka.tools.ConsumerOffsetChecker --zookeeper **:2181 --group ** --topic **
+./kafka-consumer-groups.sh --zookeeper localhost:2181 --describe --group my-group
+```
 

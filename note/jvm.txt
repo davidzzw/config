@@ -198,8 +198,8 @@ XX:+UseCMSInitiatingOccupancyOnly 如果需要根据 CMSInitiatingOccupancyFract
 -XX:CMSCompactWhenClearAllSoftRefs 默认为 true
 
 Java代码:
-public static void main(String[] args) throws InterruptedException {
 
+        public static void main(String[] args) throws InterruptedException {
         // Eden不够, 但是Old区空间是够的, 所以这时候并不会触发Young GC(Minor GC)
         byte[] byte10m1 = new byte[10 * 1024 * 1024];
     
