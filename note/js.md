@@ -1,0 +1,1 @@
+JavaScript 很复杂，很多概念 java 中都没有，像函数就是类、可变的 this 对象、闭包、原型链、Promise 等等
