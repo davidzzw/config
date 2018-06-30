@@ -90,3 +90,8 @@ code_cache
 ```
 
 RootType
+
+```
+-XX:+UnlockDiagnosticVMOptions -XX:+PrintAssmbly
+```
+
