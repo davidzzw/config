@@ -146,3 +146,13 @@ System.gc()，前提是添加了-XX:+ExplicitGCInvokesConcurrent参数
 其实这里还有concurrent mode interrupted，这是由于外部因素触发了 full gc，比如执行了System.gc()，导致了这个原因。
 ```
 
+### 总结
+
+```
+1. Full GC == Major GC指的是对老年代/永久代的stop the world的GC
+2. Full GC的次数 = 老年代GC时 stop the world的次数
+3. Full GC的时间 = 老年代GC时 stop the world的总时间
+4. CMS 不等于Full GC，我们可以看到CMS分为多个阶段，只有stop the world的阶段被计算到了Full GC的次数和时间，而和业务线程并发的GC的次数和时间则不被认为是Full GC
+5. Full GC本身不会先进行Minor GC，我们可以配置，让Full GC之前先进行一次Minor GC，因为老年代很多对象都会引用到新生代的对象，先进行一次Minor GC可以提高老年代GC的速度。比如老年代使用CMS时，设置CMSScavengeBeforeRemark优化，让CMS remark之前先进行一次Minor GC。
+```
+
