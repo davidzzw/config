@@ -13,5 +13,8 @@ git remote -v 查看你当前项目的远程git地址
 git branch -a :查看全部分支（远程的和本地的）
 git branch -l :查看本地分支
 git branch -r :查看远程分支
+git revert HEAD           撤销前一次 commit
+git revert HEAD^          撤销前前一次 commit
+git revert commit version 撤销指定的版本，撤销也会作为一次提交进行保存。
 ```
 
