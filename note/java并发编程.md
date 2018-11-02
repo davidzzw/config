@@ -7,8 +7,9 @@
 * 有界无等待
 * 线程数无关
 
-```
-Cookie: coupon_uuid="10F8A1D3CD4455C39875B71BE55D63E45%2BWda8Fveua5g6OysyHB77kKSXamaeNH2YxHZEVtfkomMJ6BMYEcm2p5TqtqsgrhoKmBG4sFpJVWE0sCEHSoEOca069YZOYf4ryhrZIzKbk%3D"; ewxinfo="362BD4CEFF736F64A9027EB558BF8728%2F8r9C2SVlqtW%2BZeVcyUoV%2B1AsYhSUYKfC43EpbqBzO41uuth5ClQCUJtTmq3dtrC4FQq8M%2FqQGQvSq98DSE3qPekDXRZyMHBxgCIrAtYliUQMsoWMD25WgvhhT5iVrnawl%2FecofIDnYM3InkrvM%2Fh2cIukozeh%2BKhZwPfi08pae4xeG%2FkU6lypMphMp1iM%2BylnLvEg3Y5S%2FN5z9Uacm3DTaNUDjnKVqY6wV%2FapaRW34O2NtwbyVrNrW0xQITCu1JrkMgymeZQ4d4tUfSEU24Bg%3D%3D"; _lxsdk_cuid=1635281c6e2c8-00bee7929-6a300e23-1fa400-1635281c6e3c8; _lxsdk=1635281c6e2c8-00bee7929-6a300e23-1fa400-1635281c6e3c8; grap_cookie_phone_ab=15651007703; h_cookie_phone=15651007703; h_w_uuid=bfac98aa-b42e-4edc-a7fc-debe078e1b7c; user_coupon_token=3369273; ewxshinfo="DB1C118A975E6703EFA75D20046AEA95KV9e0o%2BNfdFulZCioHjMgK%2BQhQ909vjIc2Az8225BF0WAzT0AjdCeUnkDcmho7MiE7X3AJlxxTuNiFSOmRzr%2BSrTZgazc6NsXnnugaqxhpRz3oypHNdtRa8zK3%2F7hHpma%2BF1oYnyTnU%2Ft037smm3F9B2tsL%2B7kjU91Ekzsm8zJEq4ayhnFcSYc0eYF9tkYPPJXYb47PHTmnf0i%2BZPIpxLYxiJ%2F%2BxcafFVuwPe1c3gRx9FRYesvN1eaBmp%2BG7m7UIzjW3dF1farcZqKRqgp1GXzpWO0xVTsj8gG%2FdKHl0q%2FY7lwKr2zUDm2Dtw7m4vI0i"; JSESSIONID=1gycq5u1wgvifpmtvm8k5qtxw; __mta=155144455.1526097627000.1526097690889.1526097914990.3; _lxsdk_s=1635281c6e6-14b-d14-5c3%7C%7C7
-https://activity.waimai.meituan.com/coupon/sharechannel/B2EA8E1ABA8B47EA82DB475BA17B517D?urlKey=4F0DB7832ABC466E9C7DBC1FC5AD01A2
-```
+### 三大特性
+
+* `可见性`：`一个线程对主内存的修改可以及时的被其他线程观察到`
+* `有序性`：`一个线程观察其他线程中的指令执行顺序，由于指令 重排序的存在，该观察结果一般杂乱无序`
+* `原子性`：`提供了互斥访问`
 

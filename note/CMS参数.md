@@ -55,10 +55,8 @@ CMSFullGCsBeforeCompaction 说的是，在上一次CMS并发GC执行过后，到
 #### **-XX:+CMSScavengeBeforeRemark** 
 
 ```
-   在CMS GC前启动一次ygc，目的在于减少old gen对ygc gen的引用，降低remark时的开销-----一般CMS的GC耗时 80%都在remark阶段
+在CMS GC前启动一次ygc，目的在于减少old gen对ygc gen的引用，降低remark时的开销-----一般CMS的GC耗时 80%都在remark阶段
 ```
-
-
 
 ### 周期性Old GC
 

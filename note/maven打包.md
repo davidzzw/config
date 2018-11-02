@@ -122,3 +122,33 @@
          </plugin>
 ```
 
+```
+<plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/agent.xml</descriptor>
+          </descriptors>
+          <archive>
+            <manifestEntries>
+              <Premain-Class>org.jolokia.jvmagent.JvmAgent</Premain-Class>
+              <Agent-Class>org.jolokia.jvmagent.JvmAgent</Agent-Class>
+              <Main-Class>org.jolokia.jvmagent.client.AgentLauncher</Main-Class>
+              <Can-Redefine-Classes>false</Can-Redefine-Classes>
+              <Can-Retransform-Classes>false</Can-Retransform-Classes>
+              <Can-Set-Native-Method-Prefix>false</Can-Set-Native-Method-Prefix>
+            </manifestEntries>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+```
+
