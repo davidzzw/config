@@ -1,3 +1,11 @@
+#### Spring默认配置文件
+
+```
+spring.handlers
+```
+
+
+
 ###注入和装配
 
 ```
@@ -215,6 +223,15 @@ NamespaceHandler和BeanDefinitionParser -> ComponentScanBeanDefinitionParser ->�
  
  isCandidateComponent实现的标签是里配置的<context:exclude-filter>指定的不扫描包，<context:exclude-filter>指定的扫描包的过滤
 ```
+
+######ClassPathBeanDefinitionScanner
+
+```
+ClassPathBeanDefinitionScanner->doScan
+AnnotationBeanNameGenerator->generateBeanName
+```
+
+
 
 ##### mvc:annotation-driven
 

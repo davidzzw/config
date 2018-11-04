@@ -1,0 +1,154 @@
+###打java包 spring包 springboot包
+
+```
+<plugins>
+           <!-- <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.chezhibao.api.Main</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>-->
+            <!--<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.chezhibao.api.Main</mainClass>
+                        &lt;!&ndash;    <useUniqueVersions>false</useUniqueVersions>&ndash;&gt;
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                       &lt;!&ndash; <manifestEntries>
+                            <Class-Path>.</Class-Path>
+                        </manifestEntries>&ndash;&gt;
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
+             <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-assembly-plugin</artifactId>
+                 <version>2.5.5</version>
+                 <configuration>
+                     <archive>
+                         <manifest>
+                             <mainClass>com.chezhibao.api.Main</mainClass>
+                         </manifest>
+                     </archive>
+                     <descriptorRefs>
+                         <descriptorRef>jar-with-dependencies</descriptorRef>
+                     </descriptorRefs>
+                 </configuration>
+                 <executions>  
+                     <execution>  
+                         <id>make-assembly</id>  
+                         <phase>package</phase>  
+                         <goals>  
+                             <goal>single</goal>  
+                         </goals>  
+                     </execution>  
+                 </executions>  
+             </plugin>
+            <!--打spring包-->
+             <plugin>  
+                <groupId>org.apache.maven.plugins</groupId>  
+                <artifactId>maven-shade-plugin</artifactId>  
+                <version>2.4.1</version>  
+                <executions>  
+                    <execution>  
+                        <phase>package</phase>  
+                        <goals>  
+                            <goal>shade</goal>  
+                        </goals>  
+                        <configuration>  
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">  
+                                    <mainClass>com.chezhibao.api.Main</mainClass>  
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">  
+                                    <resource>META-INF/spring.handlers</resource>  
+                                </transformer>  
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">  
+                                    <resource>META-INF/spring.schemas</resource>  
+                                </transformer>  
+                            </transformers>
+                        </configuration>  
+                    </execution>  
+                </executions>  
+              </plugin>  
+        <!-- <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-compiler-plugin</artifactId>
+             <configuration>
+                 <source>1.8</source>
+                 <target>1.8</target>
+             </configuration>
+         </plugin>-->
+         <plugin>
+             <groupId>org.springframework.boot</groupId>
+             <artifactId>spring-boot-maven-plugin</artifactId>
+         </plugin>
+```
+
+```
+<plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/agent.xml</descriptor>
+          </descriptors>
+          <archive>
+            <manifestEntries>
+              <Premain-Class>org.jolokia.jvmagent.JvmAgent</Premain-Class>
+              <Agent-Class>org.jolokia.jvmagent.JvmAgent</Agent-Class>
+              <Main-Class>org.jolokia.jvmagent.client.AgentLauncher</Main-Class>
+              <Can-Redefine-Classes>false</Can-Redefine-Classes>
+              <Can-Retransform-Classes>false</Can-Retransform-Classes>
+              <Can-Set-Native-Method-Prefix>false</Can-Set-Native-Method-Prefix>
+            </manifestEntries>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+```
+

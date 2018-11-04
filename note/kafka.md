@@ -61,3 +61,4 @@ DescribeGroup请求：显示组的所有信息，包括成员信息，协议名�
 ./kafka-consumer-groups.sh --zookeeper localhost:2181 --describe --group my-group
 ```
 
+`kafka-run-class.sh kafka.tools.ConsumerOffsetChecker --broker-info --group dapan-storm-topology --zookeeper escnode1:2181`
