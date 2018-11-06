@@ -4,7 +4,6 @@
 -XX:-<option> 不启用选项
 -XX:<option>=<number> 
 -XX:<option>=<string>
-
 ```
 
 ### jvm参数
@@ -34,11 +33,23 @@
 
 * `-XX:+PrintGCDetails`
 * `-XX:+PrintGCDateStamps`
-*  `-Xloggc:/tmp/gc.log` 
+* `-Xloggc:/tmp/gc.log` 
 * `-XX:+UseGCLogFileRotation`:`这个参数支持GC日志的滚动输出，默认是关闭的，所以大家要想滚动输出GC日志可以通过这个参数来设定GC日志并不是根据时间来进行滚动，而是当文件大小达到多大的时候就切换到下一个GC文件里`
 * `-XX:GCLogFileSize=100K`:`就是用来指定当当前GC日志文件大小达到100KB的时候就写入到下一个GC日志文件里，如果当前文件已经是最后一个了，那下一个目标GC日志文件将会是0号GC日志文件`
 * `-XX:NumberOfGCLogFiles=100`:`可以通过这个参数来指定要滚动输出的GC日志文件个数，日志名在上面提到的-Xloggc参数指定的路径后面加上序号，默认从0号开始，那什么时候换到下一个文件输出呢？`
 * `UseGCLogFileRotation`:`控制打开这个开关，NumberOfGCLogFiles控制滚动的日志个数，GCLogFileSize控制文件达到多少的时候写入到下一个gc日志文件里`
+* `-XX:+PrintInterpreter`:`得到运行时日志`
+
+#### 栈帧
+
+* `-XX:+PrintStubCode`:`查看运行时生成的stubs`
+* `-XX:+UnlockDiagnosticVMOptions`
+* `-XX:+ShowHiddenFrames`
+*  `-XX:+UnlockDiagnosticVMOptions`
+
+#### 逃逸
+
+* `-XX:-DoEscapeAnalysis`:`关闭逃逸分析`
 
 ####RootType
 
