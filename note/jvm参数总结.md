@@ -4,7 +4,6 @@
 -XX:-<option> 不启用选项
 -XX:<option>=<number> 
 -XX:<option>=<string>
-
 ```
 
 ### jvm参数
@@ -24,6 +23,7 @@
 * ` -XX:HeapDumpPath=/tmp`
 * `-verbose:gc`
 * `-XX:+CMSClassUnloadingEnabled `
+* `-XX:+PrintInlining`:`来打印编译过程中的内联情况 `
 
 #### String相关
 
