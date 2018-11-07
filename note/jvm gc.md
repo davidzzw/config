@@ -23,6 +23,10 @@ jvmti
 code_cache            
 ```
 
+### SafePoint
+
+
+
 ### 8种原子操作
 
 * `lock（锁定）`：`作用于主内存的变量，它把一个变量标识为一条线程独占的状态`
@@ -72,7 +76,7 @@ code_cache
 
 * `对cms的回收默认值有疑问的， 可以查看该方法https://github.com/dmlloyd/openjdk/blob/jdk9/jdk9/hotspot/src/share/vm/gc/cms/concurrentMarkSweepGeneration.cpp#L265`
 
-*  `大家都知道对于设置使用cms回收器的，有一个background式的GC。（不清楚的可以查看笨神的这篇文章http://lovestblog.cn/blog/2015/05/07/system-gc/）`
+* `大家都知道对于设置使用cms回收器的，有一个background式的GC。（不清楚的可以查看笨神的这篇文章http://lovestblog.cn/blog/2015/05/07/system-gc/）`
 
 ### G1
 
@@ -189,3 +193,11 @@ G1收集器是一款面向服务端应用的垃圾收集器。HotSpot团队赋�
 可预测的非停顿：这是G1相对于CMS的另一大优势，降低停顿时间是G1和CMS共同的关注点，能让使用者明确指定在一个长度为M毫秒的时间片段内，消耗在垃圾收集上的时间不得超过N毫秒。
 在使用G1收集器时，Java堆的内存布局和其他收集器有很大的差别，它将这个Java堆分为多个大小相等的独立区域，虽然还保留新生代和老年代的概念，但是新生代和老年代不再是物理隔离的了，它们都是一部分Region（不需要连续）的集合
 ```
+
+###永久代、metaspace
+
+```
+在PermGen移除前，上述元数据对象都在PermGen里，直接被GC管理着。 
+JDK8彻底移除PermGen后，这些对象被挪到GC堆外的一块叫做Metaspace的空间里做特殊管理，仍然间接的受
+```
+
