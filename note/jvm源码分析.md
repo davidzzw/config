@@ -29,15 +29,15 @@ KlassKlass -> Class
 
 ### jvm参数
 
-* -XX:+UseCompressedOops: `压缩对象指针 `
-* -XX:+UseCompressedClassPointers: `压缩类指针 `
+* `-XX:+UseCompressedOops`: `压缩对象指针 `
+* `-XX:+UseCompressedClassPointers`: `压缩类指针 `
 
 ### MetaSpace
 
 ```
-jmap -clstats :打印类加载器的统计信息(取代了在JDK8之前打印类加载器信息的permstat)。
-jstat -gc :Metaspace的信息也会被打印出来。
-jcmd GC.class_stats:这是一个新的诊断命令，可以使用户连接到存活的JVM，转储Java类元数据的详细统计。
+jmap -clstats :打印类加载器的统计信息(取代了在JDK8之前打印类加载器信息的permstat)
+jstat -gc :Metaspace的信息也会被打印出来
+jcmd GC.class_stats:这是一个新的诊断命令，可以使用户连接到存活的JVM，转储Java类元数据的详细统计
 ```
 
 ### 反射的实现
@@ -82,5 +82,5 @@ jcmd GC.class_stats:这是一个新的诊断命令，可以使用户连接到存
 
 `-XX:-DoEscapeAnalysis `:`关闭默认开启的逃逸分析 `
 
-`-XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler`来启用 Graal
+`-XX:+UnlockExperimentalVMOptions` ` -XX:+UseJVMCICompiler`来启用 Graal
 

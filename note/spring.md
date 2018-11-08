@@ -350,3 +350,9 @@ DefaultIntroductionAdvisor
 
 ![自动代理2](D:\config\pic\自动代理2.png)
 
+```
+1 BeanFactory与应用上下文（ApplicationContext）区别
+
+2 ContextLoaderListener和ContextLoaderServlet启动WebApplicationContext的servlet和Web容器监听器
+```
+

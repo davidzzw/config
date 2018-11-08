@@ -25,6 +25,10 @@
 * `-XX:+CMSClassUnloadingEnabled `
 * `-XX:+PrintInlining`:`来打印编译过程中的内联情况 `
 
+#### 堆外内存
+
+* `-XX:MaxDirectMemorySize `
+
 #### String相关
 
 * `-XX:StringTableSize`:` 设置StringTable的size`
