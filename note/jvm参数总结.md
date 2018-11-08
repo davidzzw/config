@@ -29,10 +29,27 @@
 
 * `-XX:MaxDirectMemorySize `
 
-#### String相关
+#### CodeCache
+
+* `-XX:ReservedCodeCacheSize` 
+* `-XX:InitialCodeCacheSize` 
+
+* `-XX:+UseCodeCacheFlushing`：`启动CodeCache清理, 释放空间, 一定条件下会导致JIT被关闭 `
+
+```
+开启UseCodeCacheFlushing这个参数，会在Code Cache满了时紧急进行清扫工作，它会丢弃一半老的编译代码（discards older half of the compiled code(nmethods) 
+开启UseCodeCacheFlushing导致问题 : CodeCache空间降了一半，方法编译工作仍然可能不会重启; flushing可能导致高的cpu使用，从而影响性能下降
+```
+
+#### StringTable相关
 
 * `-XX:StringTableSize`:` 设置StringTable的size`
 * `XX:+PrintStringTableStatistics`: `在程序结束时打印StringTable的一些使用情况`
+
+#### 编译器相关
+
+* `-Xcomp`:` jvm运行在纯编译模式 `
+* `-XX:+TieredCompilation `:`开启分层编译模式 `
 
 ####日志相关
 

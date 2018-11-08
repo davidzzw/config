@@ -8,6 +8,7 @@
 * `jstat -gc 4210 2s 3`
 * `java -XX:+PrintFlagsFinal -version |grep JVMParamName`:` 获取JVM参数的默认值`
 * `jstat -gccause`
+* `jstat -gccapacity `
 
 ### 定位并分析耗cpu最多的线程
 
@@ -79,3 +80,16 @@
 ### jcmd
 
 * `jcmd pid GC.class_stats | awk '{print $13}' | sort | uniq -c | sort -nrk1 > topclass.txt `
+
+####查看Code Cache大小 
+
+* `jinfo -flag ReservedCodeCacheSize pid`
+
+###hprof（Heap/CPU Profiling Tool）
+
+`hprof能够展现CPU使用率，统计堆内存使用情况`
+
+* `java -agentlib:hprof[=options] ToBeProfiledClass`
+* `java -Xrunprof[:options] ToBeProfiledClass`
+* `javac -J-agentlib:hprof[=options] ToBeProfiledClass`
+
