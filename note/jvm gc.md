@@ -25,7 +25,16 @@ code_cache
 
 ### SafePoint
 
-
+```
+1、理论上，在解释器的每条字节码的边界都可以放一个safepoint，不过挂在safepoint的调试符号信息要占用内存空间，如果每条机器码后面都加safepoint的话，需要保存大量的运行时数据，所以要尽量少放置safepoint，在safepoint会生成polling代码询问VM是否要“进入safepoint”，polling操作也是有开销的，polling操作会在后续解释。
+2、通过JIT编译的代码里，会在所有方法的返回之前，以及所有非counted loop的循环（无界循环）回跳之前放置一个safepoint，为了防止发生GC需要STW时，该线程一直不能暂停。另外，JIT编译器在生成机器码的同时会为每个safepoint生成一些“调试符号信息”，为GC生成的符号信息是OopMap，指出栈上和寄存器里哪里有GC管理的指针。
+一般会在如下几个位置选择安全点：
+1. 循环的末尾 
+2. 方法临返回前 / 调用方法的call指令后 
+3. 可能抛异常的位置
+safePoint无法解决线程未达到safePoint并处于休眠或等待状态的情况，此时引入safeRegion的概念。
+safeRegion是代码中的一块区域或线程的状态，在safeRegion中，线程执行与否不会影响对象引用的状态。线程进入safeRegion会给自己加标记，告诉虚拟机可以进行GC；线程准备离开safeRegion前会询问虚拟机GC是否完成。
+```
 
 ### 8种原子操作
 
