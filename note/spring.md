@@ -139,9 +139,8 @@ bean的实例化前调用，也就是降AbstractBeanDefinition转换为BeanWrapp
 
 ##### 循环依赖
 
-1构造器循环依赖
-
-2setter循环依赖
+* 构造器循环依赖
+* setter循环依赖
 
 ##### 创建bean
 
