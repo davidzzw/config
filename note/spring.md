@@ -139,9 +139,8 @@ bean的实例化前调用，也就是降AbstractBeanDefinition转换为BeanWrapp
 
 ##### 循环依赖
 
-1构造器循环依赖
-
-2setter循环依赖
+* 构造器循环依赖
+* setter循环依赖
 
 ##### 创建bean
 
@@ -349,4 +348,10 @@ DefaultIntroductionAdvisor
 * `AnnotationAwareAspectJAutoProxyCreator`:基于Bean中Aspect注解标签的自动代理创建器
 
 ![自动代理2](D:\config\pic\自动代理2.png)
+
+```
+1 BeanFactory与应用上下文（ApplicationContext）区别
+
+2 ContextLoaderListener和ContextLoaderServlet启动WebApplicationContext的servlet和Web容器监听器
+```
 

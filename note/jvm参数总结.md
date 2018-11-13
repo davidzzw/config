@@ -8,6 +8,8 @@
 
 ### jvm参数
 
+####基本参数
+
 * `-XX:+Xmx`: `设置堆内存的最大值`
 * `-XX:+Xms`:` 设置堆内存的初始值`
 * `-XX:+Xmn`:` 设置新生代的大小`
@@ -24,11 +26,39 @@
 * `-verbose:gc`
 * `-XX:+CMSClassUnloadingEnabled `
 * `-XX:+PrintInlining`:`来打印编译过程中的内联情况 `
+*  `-XX:SurvivorRatio`: `Eden 区和 Survivor 区的比例 `
+* `-XX:+MaxTenuringThreshold `
+* `-XX:TargetSurvivorRatio`:`如果单个 Survivor 区已经被占用了 50%,那么较高复制次数的对象也会被晋升至老年代 `
 
-#### String相关
+#### 堆外内存
+
+* `-XX:MaxDirectMemorySize `
+
+#### CodeCache
+
+* `-XX:ReservedCodeCacheSize` 
+* `-XX:InitialCodeCacheSize` 
+
+* `-XX:+UseCodeCacheFlushing`：`启动CodeCache清理, 释放空间, 一定条件下会导致JIT被关闭 `
+
+```
+开启UseCodeCacheFlushing这个参数，会在Code Cache满了时紧急进行清扫工作，它会丢弃一半老的编译代码（discards older half of the compiled code(nmethods) 
+开启UseCodeCacheFlushing导致问题 : CodeCache空间降了一半，方法编译工作仍然可能不会重启; flushing可能导致高的cpu使用，从而影响性能下降
+```
+
+#### 卡表
+
+* `-XX:+UseCondCardMark`:`减少写卡表的操作 `
+
+#### StringTable相关
 
 * `-XX:StringTableSize`:` 设置StringTable的size`
 * `XX:+PrintStringTableStatistics`: `在程序结束时打印StringTable的一些使用情况`
+
+#### 编译器相关
+
+* `-Xcomp`:` jvm运行在纯编译模式 `
+* `-XX:+TieredCompilation `:`开启分层编译模式 `
 
 ####日志相关
 

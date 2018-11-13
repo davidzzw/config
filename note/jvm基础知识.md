@@ -41,6 +41,10 @@
 
 #### Code Cache
 
+```
+Code Cache代码缓存区，它主要用于存放JIT所编译的代码。CodeCache代码缓冲区的大小在client模式下默认最大是32m，在server模式下默认是48m，这个值也是可以设置的，它所对应的JVM参数为ReservedCodeCacheSize 和 InitialCodeCacheSize
+```
+
 
 
 ###类加载机制
