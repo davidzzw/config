@@ -8,9 +8,11 @@
 开闭原则－The Open-Closed Principle (OCP)
 ```
 
- 
-
-http://cenalulu.github.io/mysql/mysql-mojibake/
+ ```
+Java语言中，虚方法可以通过覆写（override）的方式来实现子类型多态（subtype polymorphism）。Java语言支持三种多态，除了子类型多态外还有通过方法重载支持的ad-hoc多态（ad-hoc polymorphism）与通过泛型支持的参数化多态（parametric polymorphism）。在面向对象编程的语境里“多态”一般指子类型多态，下面提到“多态”一词也特定指子类型多态。 
+Java语言中非虚方法可以通过“静态绑定”（static binding）或者叫“早绑定”（early binding）来选择实际的调用目标——因为无法覆写，无法产生多态的效果，于是可能的调用目标总是固定的一个。虚方法则一般需要等到运行时根据“接收者”的具体类型来选择到底要调用哪个版本的方法，这个过程称为“运行时绑定”（runtime binding）或者叫“迟绑定”（late-binding）。 
+不过Java的虚方法的迟绑定具体如何去选择目标是写死在语言规范与JVM的实现中的，用户无法干涉选择的过程。这使得Java提供的迟绑定缺乏自由度。在Java 7开始提供invokedynamic支持后，用户可以自行编写程序来控制迟绑定的过程，开始对选择调用目标拥有完整的控制权。 
+ ```
 
 在 Java 中除了最为基础的东西之外，你只要看三样东西就可以了：
 Java 中有三大支柱，在 java.util.concurrent、java.security、javax.cropty、javax.security 四个包中就占了两个（多线程、安全）

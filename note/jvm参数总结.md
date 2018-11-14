@@ -83,11 +83,14 @@
 * `-XX:+PrintStubCode`:`查看运行时生成的stubs`
 * `-XX:+UnlockDiagnosticVMOptions`
 * `-XX:+ShowHiddenFrames`
-*  `-XX:+UnlockDiagnosticVMOptions`
+* `-XX:+UnlockDiagnosticVMOptions`
+* `-XX:+UseTLAB`
 
 #### 逃逸
 
-* `-XX:-DoEscapeAnalysis`:`关闭逃逸分析`
+* `-XX:-DoEscapeAnalysis `:`关闭默认开启的逃逸分析 `
+* `-XX:+UnlockExperimentalVMOptions` 
+* ` -XX:+UseJVMCICompiler`:`来启用 Graal`
 
 #### 内联
 
@@ -98,6 +101,11 @@
 
 * `-XX:+UnlockDiagnosticVMOptions` 
 * `-XX:+PrintAssmbly`
+
+#### 指针
+
+- `-XX:+UseCompressedOops`: `压缩对象指针 `
+- `-XX:+UseCompressedClassPointers`: `压缩类指针 `
 
 #### CMS相关参数
 
