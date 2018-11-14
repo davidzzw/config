@@ -46,6 +46,12 @@
 开启UseCodeCacheFlushing导致问题 : CodeCache空间降了一半，方法编译工作仍然可能不会重启; flushing可能导致高的cpu使用，从而影响性能下降
 ```
 
+####Safepoint
+
+* `-XX:+PrintSafepointStatistics`
+* `-XX:+UseCountedLoopSafepoints`
+* `–XX:PrintSafepointStatisticsCount=1` 
+
 #### 卡表
 
 * `-XX:+UseCondCardMark`:`减少写卡表的操作 `
@@ -70,6 +76,7 @@
 * `-XX:NumberOfGCLogFiles=100`:`可以通过这个参数来指定要滚动输出的GC日志文件个数，日志名在上面提到的-Xloggc参数指定的路径后面加上序号，默认从0号开始，那什么时候换到下一个文件输出呢？`
 * `UseGCLogFileRotation`:`控制打开这个开关，NumberOfGCLogFiles控制滚动的日志个数，GCLogFileSize控制文件达到多少的时候写入到下一个gc日志文件里`
 * `-XX:+PrintInterpreter`:`得到运行时日志`
+* `-XX:+PrintGCApplicationStoppedTime`
 
 #### 栈帧
 
@@ -81,6 +88,11 @@
 #### 逃逸
 
 * `-XX:-DoEscapeAnalysis`:`关闭逃逸分析`
+
+#### 内联
+
+* `-XX:+PrintCompilation` 
+* `-XX:+PrintInlining `
 
 ####RootType
 
