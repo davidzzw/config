@@ -178,3 +178,41 @@ jcmd GC.class_stats:这是一个新的诊断命令，可以使用户连接到存
 
 `-XX:+UnlockExperimentalVMOptions` ` -XX:+UseJVMCICompiler来启用 Graal`
 
+
+
+### JVMTI(JVM Tool Interface)
+
+* `JVMPI(Java Virtual Machine Profiler Interface)`
+* `JVMDI(Java Virtual Machine Debug Interface)`
+* `-agentlib:agent-lib-name=options`
+* `-agentpath:path-to-agent=options`
+
+###Agent
+
+`Agent 是在 Java 虚拟机启动之时加载的，这个加载处于虚拟机初始化的早期，在这个时间点上：`
+
+* `所有的 Java 类都未被初始化`
+* `所有的对象实例都未被创建`
+* `因而，没有任何 Java 代码被执行`
+
+`但在这个时候，我们已经可以：`
+
+* `但在这个时候，我们已经可以`
+* ` 操作 JVMTI 的 Capability 参数`
+* `使用系统参数`
+
+### Instrumentation 
+
+`类定义动态改变和操作`
+
+* `public static void premain(String agentArgs， Instrumentation inst) `
+* `public static void agentmain (String agentArgs, Instrumentation inst)`
+
+### Attach API 
+
+* `VirtualMachine`
+* `Attach 动作和 Detach 动作（Attach 动作的相反行为，从 JVM 上面解除一个代理）`
+* `VirtualMachineDescriptor 则是一个描述虚拟机的容器类`
+
+### JPDA
+
