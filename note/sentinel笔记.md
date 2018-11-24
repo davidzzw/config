@@ -36,3 +36,16 @@ chain.addLast(new FlowSlot());
 chain.addLast(new DegradeSlot());
 ```
 
+### 限流
+
+#### 基于QPS/并发数的流量控制
+
+* `直接拒绝 `
+* `冷启动 `
+* `匀速器 （漏桶算法 ）`
+
+### 熔断降级
+
+* `平均响应时间(DEGRADE_GRADE_RT)  `
+* `异常比例 (DEGRADE_GRADE_EXCEPTION)` 
+

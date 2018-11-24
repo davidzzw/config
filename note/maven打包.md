@@ -152,3 +152,8 @@
       </plugin>
 ```
 
+```
+mvn install:install-file  -Dfile=/d/tools.jar -DgroupId=com.sun -DartifactId=tools -Dversion=1.8 -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+
+```
+

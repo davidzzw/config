@@ -23,7 +23,7 @@
 
 ###jmap排查问题
 
-* `jmap -dump`:`这个命令执行，JVM会将整个heap的信息dump写入到一个文件，heap如果比较大的话，就会导致这个过程比较耗时，并且执行的过程中为了保证dump的信息是可靠的，所以会暂停应用`
+* `jmap -dump:format=b,file=filename.hprof pid`:`这个命令执行，JVM会将整个heap的信息dump写入到一个文件，heap如果比较大的话，就会导致这个过程比较耗时，并且执行的过程中为了保证dump的信息是可靠的，所以会暂停应用`
 * `jmap -permstat`:`这个命令执行，JVM会去统计perm区的状况，这整个过程也会比较的耗时，并且同样也会暂停应用`
 * `jmap -histo:live pid`:`这个命令执行，JVM会先触发gc，然后再统计信息`
 * `jmap -histo pid | head -n20`:`对象分布`
@@ -81,7 +81,7 @@
 
 * `jcmd pid GC.class_stats | awk '{print $13}' | sort | uniq -c | sort -nrk1 > topclass.txt `
 
-####查看Code Cache大小 
+###查看Code Cache大小
 
 * `jinfo -flag ReservedCodeCacheSize pid`
 

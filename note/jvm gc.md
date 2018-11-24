@@ -65,7 +65,7 @@ Java 虚拟机中的 Stop-the-world 是通过安全点（safepoint）机制来�
 不管如何，其目的都是在可接受的性能开销以及内存开销之内，避免机器码长时间不进入安全点的情况，间接地减少垃圾回收的暂停时间。
 ```
 
-* ​
+###PerfData 
 
 ### 开启垃圾回收器参数
 
@@ -104,8 +104,14 @@ Java 虚拟机中的 Stop-the-world 是通过安全点（safepoint）机制来�
 #### 进阶
 
 * `对cms的回收默认值有疑问的， 可以查看该方法https://github.com/dmlloyd/openjdk/blob/jdk9/jdk9/hotspot/src/share/vm/gc/cms/concurrentMarkSweepGeneration.cpp#L265`
-
 * `大家都知道对于设置使用cms回收器的，有一个background式的GC。（不清楚的可以查看笨神的这篇文章http://lovestblog.cn/blog/2015/05/07/system-gc/）`
+
+####CMS gc次数
+
+```
+CMS并发GC过程中出现了concurrent mode failure的话那么接下来就会做一次mark-sweep-compact的full GC，这个是完全stop-the-world的
+正是这个特征，使得CMS的每个并发GC周期总共会更新full GC计数器两次，initial mark与final re-mark各一次；如果出现concurrent mode failure，则接下来的full GC自己算一次
+```
 
 ### G1
 
@@ -268,3 +274,7 @@ HotSpot 给出的解决方案是一项叫做卡表（Card Table）的技术。�
 `虚拟机并不总是要求对象的年龄必须达到MaxTenuringThreshold才能晋升到老年代，如果在Survivor区中相同年龄（设年龄为age）的对象的所有大小之和超过Survivor空间的一半，年龄大于或等于该年龄（age）的对象就可以直接进入老年代，无需等到MaxTenuringThreshold中要求的年龄`
 
 * `如果单个 Survivor 区已经被占用了 50%（对应虚拟机参数 -XX:TargetSurvivorRatio），那么较高复制次数的对象也会被晋升至老年代 `
+
+### FGC
+
+`FGC列表示的是full GC次数，对应的jvmstat计数器是sun.gc.collector.1.invocations `
