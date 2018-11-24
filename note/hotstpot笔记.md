@@ -173,6 +173,7 @@ jcmd GC.class_stats:这是一个新的诊断命令，可以使用户连接到存
 
 `-XX:+UnlockExperimentalVMOptions` ` -XX:+UseJVMCICompiler来启用 Graal`
 
+<<<<<<< HEAD
 ```
 解释执行
 即时执行
@@ -184,4 +185,79 @@ jcmd GC.class_stats:这是一个新的诊断命令，可以使用户连接到存
 ```
 HotSpot有一套私有API提供了对JVM内部数据结构的审视功能，称为Serviceability Agent。它是一套Java API，虽然HotSpot是用C++写的，但SA提供了HotSpot中重要数据结构的Java镜像类，所以可以直接写Java代码来查看一个跑在HotSpot上的Java进程的内部状态。它也提供了一些封装好的工具，可以直接在命令行上跑，包括下面提到的ClassDump工具
 ```
+=======
+
+
+### JVMTI(JVM Tool Interface)
+
+* `JVMPI(Java Virtual Machine Profiler Interface)`
+* `JVMDI(Java Virtual Machine Debug Interface)`
+* `-agentlib:agent-lib-name=options`
+* `-agentpath:path-to-agent=options`
+
+###Agent
+
+`Agent 是在 Java 虚拟机启动之时加载的，这个加载处于虚拟机初始化的早期，在这个时间点上：`
+
+* `所有的 Java 类都未被初始化`
+* `所有的对象实例都未被创建`
+* `因而，没有任何 Java 代码被执行`
+
+`但在这个时候，我们已经可以：`
+
+* `但在这个时候，我们已经可以`
+* ` 操作 JVMTI 的 Capability 参数`
+* `使用系统参数`
+
+### Instrumentation 
+
+`类定义动态改变和操作`
+
+* `public static void premain(String agentArgs， Instrumentation inst) `
+* `public static void agentmain (String agentArgs, Instrumentation inst)`
+
+### Attach API 
+
+* `VirtualMachine`
+* `Attach 动作和 Detach 动作（Attach 动作的相反行为，从 JVM 上面解除一个代理）`
+* `VirtualMachineDescriptor 则是一个描述虚拟机的容器类`
+
+### JPDA
+
+### 优化
+
+#### 循环优化
+
+##### 循环无关代码（Loop-invariant Code）
+
+`循环无关代码外提将循环中值不变的表达式，或者循环无关检测外提至循环之前`
+
+* `循环无关代码外提`
+
+
+* `循环预测（Loop Prediction，对应虚拟机参数-XX:+UseLoopPredicate)`
+
+#### 循环展开(Loop Unrolling)
+
+`在循环体中重复多次循环迭代，并减少循环次数的编译优化`
+
+`在 C2 中，只有计数循环（Counted Loop）才能被展开。所谓的计数循环需要满足如下四个条件`
+
+* `维护一个循环计数器，并且基于计数器的循环出口只有一个（但可以有基于其他判断条件的出口）`
+* `循环计数器的类型为 int、short 或者 char（即不能是 byte、long，更不能是 float 或者 double）`
+* `每个迭代循环计数器的增量为常数`
+* `循环计数器的上限（增量为正数）或下限（增量为负数）是循环无关的数值`
+
+##### 完全展开（Full Unroll）
+
+##### 循环判断外提（loop unswitching）
+
+`将循环中的 if 语句外提至循环之前，并且在该 if 语句的两个分支中分别放置一份循环代码`
+
+#####循环剥离（loop peeling）
+
+`将循环的前几个迭代或者后几个迭代剥离出循环的优化方式`
+
+#### 向量化
+>>>>>>> 40d0900bfc0632ef771bced5c91c65fd406ff17e
 

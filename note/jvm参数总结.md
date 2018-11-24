@@ -26,7 +26,7 @@
 * `-verbose:gc`
 * `-XX:+CMSClassUnloadingEnabled `
 * `-XX:+PrintInlining`:`来打印编译过程中的内联情况 `
-*  `-XX:SurvivorRatio`: `Eden 区和 Survivor 区的比例 `
+* `-XX:SurvivorRatio`: `Eden 区和 Survivor 区的比例 `
 * `-XX:+MaxTenuringThreshold `
 * `-XX:TargetSurvivorRatio`:`如果单个 Survivor 区已经被占用了 50%,那么较高复制次数的对象也会被晋升至老年代 `
 
@@ -148,7 +148,9 @@
 
 #### G1相关参数
 
+####循环预测（Loop Prediction）
 
+* `-XX:+UseLoopPredicate`
 
 ### 查看jvm启动参数
 
