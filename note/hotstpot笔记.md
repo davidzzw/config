@@ -106,13 +106,12 @@ init.cpp
 
 ### 高级特性
 
-#### 方法内联（method inlining）
-
-####逃逸分析（escape analysis）
-
-#### 标量替换（scalar replacement）
-
-#### 无用代码削除（dead-code elimination）
+```
+方法内联（method inlining）
+逃逸分析（escape analysis）
+标量替换（scalar replacement）
+无用代码削除（dead-code elimination）
+```
 
 ### jvm 对象
 
@@ -173,19 +172,6 @@ jcmd GC.class_stats:这是一个新的诊断命令，可以使用户连接到存
 
 `-XX:+UnlockExperimentalVMOptions` ` -XX:+UseJVMCICompiler来启用 Graal`
 
-<<<<<<< HEAD
-```
-解释执行
-即时执行
-静态绑定
-```
-
-### SA([Serviceability Agent](http://openjdk.java.net/groups/hotspot/docs/Serviceability.html) )
-
-```
-HotSpot有一套私有API提供了对JVM内部数据结构的审视功能，称为Serviceability Agent。它是一套Java API，虽然HotSpot是用C++写的，但SA提供了HotSpot中重要数据结构的Java镜像类，所以可以直接写Java代码来查看一个跑在HotSpot上的Java进程的内部状态。它也提供了一些封装好的工具，可以直接在命令行上跑，包括下面提到的ClassDump工具
-```
-=======
 
 
 ### JVMTI(JVM Tool Interface)
@@ -259,5 +245,3 @@ HotSpot有一套私有API提供了对JVM内部数据结构的审视功能，称�
 `将循环的前几个迭代或者后几个迭代剥离出循环的优化方式`
 
 #### 向量化
->>>>>>> 40d0900bfc0632ef771bced5c91c65fd406ff17e
-
