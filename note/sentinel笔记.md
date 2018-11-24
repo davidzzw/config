@@ -40,9 +40,9 @@ chain.addLast(new DegradeSlot());
 
 #### 基于QPS/并发数的流量控制
 
-* `直接拒绝 `
-* `冷启动 `
-* `匀速器 （漏桶算法 ）`
+* `直接拒绝 （CONTROL_BEHAVIOR_DEFAULT）` 
+* `冷启动（CONTROL_BEHAVIOR_WARM_UP） `
+* `匀速器 (CONTROL_BEHAVIOR_RATE_LIMITER)（漏桶算法 ）`
 
 ### 熔断降级
 
