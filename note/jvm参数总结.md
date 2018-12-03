@@ -109,6 +109,10 @@
 
 #### CMS相关参数
 
+* `-XX:+UseConcMarkSweepGC `:`使用CMS垃圾回收期 `
+* `-XX:+ExplicitGCInvokesConcurrent `:`使用CMS收集器来触发Full gc `
+* `-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses`: `保证当有系统GC调用时，永久代也被包括进CMS垃圾回收的范围内 `
+
 - `-XX:+UseCMSCompactAtFullCollection`:`收集开关参数（默认就是开启的)，用于在CMS收集器进行FullGC完开启内存碎片的合并整理过程参数可以使 CMS 在垃圾收集完成后，进行一次内存碎片整理。内存碎片的整理并不是并发进行`
 
 - `-XX:UseCMSInitatingOccupancyOnly`：`表示只在到达阈值的时候，才进行 CMS 回收`
@@ -136,15 +140,22 @@
   只有在生产系统中测量(或类生产测试系统)发现应用程序的暂停时间的目标没有达到 , 就可以通过这些标志应该进行GC调优
   ```
 
-- `-XX:+UseCMSInitiatingOccupancyOnly`: `如果需要根据 CMSInitiatingOccupancyFraction 的值进行判断，需要设置参数--XX:CMSInitiatingOccupancyFraction`
+- `-XX:+UseCMSInitiatingOccupancyOnly`: `如果需要根据 CMSInitiatingOccupancyFraction 的值进行判断，需要设置参数CMSInitiatingOccupancyFraction,使用手动定义初始化定义开始CMS收集,禁止hostspot自行触发CMS GC`
+
+`我们用-XX+UseCMSInitiatingOccupancyOnly标志来命令JVM不基于运行时收集的数据来启动CMS垃圾收集周期。而是，当该标志被开启时，JVM通过CMSInitiatingOccupancyFraction的值进行每一次CMS收集，而不仅仅是第一次。然而，请记住大多数情况下，JVM比我们自己能作出更好的垃圾收集决策。因此，只有当我们充足的理由(比如测试)并且对应用程序产生的对象的生命周期有深刻的认知时，才应该使用该标志`
 
 - `-XX:CMSInitiatingOccupancyFraction`:` 判断当前老年代使用率是否大于阈值，则触发 cms gc`
-
-- `-XX:+CMSClassUnloadingEnabled`:` 希望对永久代进行垃圾收集`
-
 - `-XX:CMSCompactWhenClearAllSoftRefs`:` 默认为 true`
-
 - `-XX:CMSFullGCsBeforeCompaction=0` :`而且默认就是开启且每次full gc后整理old区内存碎片问题 cms gc不会整理内存碎片，但是full gc会`
+- `-XX:+CMSPermGenSweepingEnabled`:`是否会清理持久代`
+- `-XX:+CMSInitiatingPermOccupancyFraction `:`设置Perm Gen使用到达多少比率时触发 `
+- `-XX:+CMSClassUnloadingEnabled`:` 在使用CMS垃圾回收机制的时候是否启用类卸载功能,如果希望对永久代进行垃圾回收，可用设置标志-XX:+CMSClassUnloadingEnabled`
+- `-XX:+CMSScheduleRemarkEdenSizeThreshold `:`新生代Eden区的内存使用量大于参数 `
+- `-XX:+UseCMSCompactAtFullCollection `:`用于在Full GC之后增加一个碎片整理`
+- `-XX:+CMSFullGCsBeforeCompaction `:`多少次后进行内存压缩 `
+- `-XX:+CMSScavengeBeforeRemark `:`开启或关闭在CMS重新标记阶段之前的清除（YGC）尝试 `
+- `-XX:+CMSParallelRemarkEnabled `:`降低标记停顿 `
+-  `-XX:+CMSIncrementalMode `:`设置为增量模式 ,用于单CPU情况`
 
 #### G1相关参数
 
