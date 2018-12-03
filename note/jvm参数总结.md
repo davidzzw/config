@@ -1,3 +1,5 @@
+`所有参数在globals.hpp`
+
 ```
 垃圾收集器参数总结
 -XX:+<option> 启用选项
@@ -94,7 +96,7 @@
 
 #### 内联
 
-* `-XX:+PrintCompilation` 
+* `-XX:+PrintCompilation` :`确认某个方法有没有被JIT编译`
 * `-XX:+PrintInlining `
 
 ####RootType
@@ -153,15 +155,25 @@
 - `-XX:+CMSScheduleRemarkEdenSizeThreshold `:`新生代Eden区的内存使用量大于参数 `
 - `-XX:+UseCMSCompactAtFullCollection `:`用于在Full GC之后增加一个碎片整理`
 - `-XX:+CMSFullGCsBeforeCompaction `:`多少次后进行内存压缩 `
-- `-XX:+CMSScavengeBeforeRemark `:`开启或关闭在CMS重新标记阶段之前的清除（YGC）尝试 `
+- `-XX:+CMSScavengeBeforeRemark `:`开启或关闭在CMS重新标记阶段之前的清除（YGC）尝试,CMS remark阶段前会触发一次minor GC `
 - `-XX:+CMSParallelRemarkEnabled `:`降低标记停顿 `
--  `-XX:+CMSIncrementalMode `:`设置为增量模式 ,用于单CPU情况`
+- `-XX:+CMSIncrementalMode `:`设置为增量模式 ,用于单CPU情况`
 
 #### G1相关参数
 
 ####循环预测（Loop Prediction）
 
 * `-XX:+UseLoopPredicate`
+
+#### **UseParallelGC** 或 UseParallelOldGC
+
+* `-XX:+ScavengeBeforeFullGC `:`当它启用并且当前在使用 +UseParallelGC或+UseParallelOldGC时触发full GC就会先用PSScavenge来收集一次young gen（也就是做一次minor GC），然后再用PSMarkSweep（如果用+UseParallelOldGC）或PSParallelCompact（如果用+UseParallelOldGC）来收集一到多次全堆`
+
+####System.gc
+
+* `-XXnoSystemGC`
+* `-XXfullSystemGC`
+* `-XX:-UseCounterDecay`:`禁用计数器衰减的`
 
 ### 查看jvm启动参数
 

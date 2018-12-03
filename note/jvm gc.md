@@ -128,6 +128,18 @@ CMS算法中提供了一个参数： CMSScavengeBeforeRemark，默认并没有�
 不过，这种参数有利有弊，利是降低了Remark阶段的停顿时间，弊的是在新生代对象很少的情况下也多了一次YGC，最可怜的是在AbortablePreclean阶段已经发生了一次YGC，然后在该阶段又傻傻的触发一次。
 ```
 
+##### 5、（STW）重新标记
+
+`重新扫描堆中的对象，进行可达性分析,标记活着的对象。这个阶段扫描的目标是：新生代的对象 + Gc Roots + 前面被标记为dirty的card对应的老年代对象。如果预清理的工作没做好，这一步扫描新生代的时候就会花很多时间，导致这个阶段的停顿时间过长。这个过程是多线程的。`
+
+#####6、并发清除
+
+`用户线程被重新激活，同时将那些未被标记为存活的对象标记为不可达`
+
+#####7、并发重置
+
+`CMS内部重置回收器状态，准备进入下一个并发回收周期`
+
 ####主动Old GC
 
 #####触发条件
@@ -180,6 +192,8 @@ CMS并发GC过程中出现了concurrent mode failure的话那么接下来就会�
 这里可以发现是 full gc 导致了concurrent mode failure，而不是因为concurrent mode failure 错误导致触发 full gc，真正触发 full gc 的原因可能是 ygc 时发生的promotion failure。
 其实这里还有concurrent mode interrupted，这是由于外部因素触发了 full gc，比如执行了System.gc()，导致了这个原因。
 ```
+
+`CMS GC（并发模式）不是full GC。CMS GC只收集old gen，并且可以与minor GC（通常是ParNew）并发进行。如果启用了CMSScavengeBeforeRemark 则在CMS remark阶段前会触发一次minor GC`
 
 #### 部分参数详解
 
@@ -383,3 +397,18 @@ HotSpot 给出的解决方案是一项叫做卡表（Card Table）的技术。�
 ### FGC
 
 `FGC列表示的是full GC次数，对应的jvmstat计数器是sun.gc.collector.1.invocations `
+
+`HotSpot VM的full GC就是full GC，用同一种收集算法处理整个堆，不需要用两个不同的收集器来收集young gen和old gen（以及perm gen）`
+
+### System.gc
+
+```
+在HotSpot VM里，System.gc()默认触发的是一次full GC，stop-the-world，收集全堆。如果配置了+UseConcMarkSweepGC并且开启了+ExplicitGCInvokesConcurrent 或 -XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses，则System.gc()会触发一次CMS GC，并发模式，只收集old gen。如果开启了+DisableExplicitGC则System.gc()不执行任何GC就直接返回。 
+通常HotSpot VM会立即执行System.gc()触发的GC。但如果调用System.gc()的时候有线程正在JNI critical section中（也就是执行了JNI的xxxCritical系函数GetStringCritical、GetPrimitiveArrayCritical，而还没释放定住的资源ReleaseStringCritical、ReleasePrimitiveArrayCritical时），则HotSpot VM会先记下这个请求并让System.gc()返回，然后等所有JNI critical section都退出后再补一次full GC。如果配置了+UseConcMarkSweepGC并且开启了+GCLockerInvokesConcurrent的话则这种延迟触发的GC会是CMS GC，并发模式，只收集old gen
+```
+
+### promotion failed和concurrent mode failure
+
+* ` promotion failed是说，担保机制确定老年代是否有足够的空间容纳新来的对象，如果担保机制说有，但是真正分配的时候发现由于碎片导致找不到连续的空间而失败`
+* `concurrent mode failure是指并发周期还没执行完，用户线程就来请求比预留空间更大的空间了，即后台线程的收集没有赶上应用线程的分配速度`
+
