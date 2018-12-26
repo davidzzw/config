@@ -32,6 +32,13 @@
 * `-XX:+MaxTenuringThreshold `
 * `-XX:TargetSurvivorRatio`:`如果单个 Survivor 区已经被占用了 50%,那么较高复制次数的对象也会被晋升至老年代 `
 
+#### 编译
+
+* `-Xint`:`解释模式`
+* `-Xcomp`:`编译模式`
+* `-Xmixed`:`混合模式`
+* `-XX:+PrintInterpreter`:`为非编译的方法应用解释器`
+
 #### 堆外内存
 
 * `-XX:MaxDirectMemorySize `
