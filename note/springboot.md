@@ -80,3 +80,13 @@ BootstrapApplicationListener
 @ConditionalOnNotWebApplication（不是web应用）
 ```
 
+### 日志
+
+```
+LoggingApplicationListener -> initializeSystem
+```
+
+
+
+#### logback
+

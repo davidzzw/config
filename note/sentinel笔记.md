@@ -49,3 +49,5 @@ chain.addLast(new DegradeSlot());
 * `平均响应时间(DEGRADE_GRADE_RT)  `
 * `异常比例 (DEGRADE_GRADE_EXCEPTION)` 
 
+#### LeapArray
+
