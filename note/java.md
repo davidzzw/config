@@ -14,6 +14,19 @@ Java语言中非虚方法可以通过“静态绑定”（static binding）或�
 不过Java的虚方法的迟绑定具体如何去选择目标是写死在语言规范与JVM的实现中的，用户无法干涉选择的过程。这使得Java提供的迟绑定缺乏自由度。在Java 7开始提供invokedynamic支持后，用户可以自行编写程序来控制迟绑定的过程，开始对选择调用目标拥有完整的控制权。 
  ```
 
+### 反射
+
+* `Class.forName()和ClassLoader.loadClass`
+
+```
+Class.forName(className)方法，内部实际调用的方法是  Class.forName(className,true,classloader);
+第2个boolean参数表示类是否需要初始化，  Class.forName(className)默认是需要初始化。
+一旦初始化，就会触发目标对象的 static块代码执行，static参数也也会被再次初始化。
+ClassLoader.loadClass(className)方法，内部实际调用的方法是  ClassLoader.loadClass(className,false);
+第2个 boolean参数，表示目标对象是否进行链接，false表示不进行链接，由上面介绍可以，
+不进行链接意味着不进行包括初始化等一些列步骤，那么静态块和静态对象就不会得到执行
+```
+
 在 Java 中除了最为基础的东西之外，你只要看三样东西就可以了：
 Java 中有三大支柱，在 java.util.concurrent、java.security、javax.cropty、javax.security 四个包中就占了两个（多线程、安全）
 还有一个网络在 java.net、javax.net 中，呵呵
@@ -55,7 +68,6 @@ keytool 的 JDK 工具
 -Dcom.sun.management.jmxremote.authenticate=false
 -Djava.rmi.server.hostname=127.0.0.1
 
-
 优点： 
 1.在单例模式中，活动的单例只有一个实例，对单例类的所有实例化得到的都是相同的一个实例。这样就 防止其它对象对自己的实例化，确保所有的对象都访问一个实例 
 2.单例模式具有一定的伸缩性，类自己来控制实例化进程，类就在改变实例化进程上有相应的伸缩性。 
@@ -64,7 +76,7 @@ keytool 的 JDK 工具
 5.允许可变数目的实例。 
 6.避免对共享资源的多重占用。
 
-https://gist.github.com/strongant
+
 
 但对于方法参数的日志倒是可以自动化：
 
@@ -74,11 +86,6 @@ public ResponseEntity<Resp> accessToken(@RequestParam("auth_token") @LogMask Str
     @RequestHeader("X-Xxxx-Device-Id") @LogMask String deviceId, String env, HttpServletRequest request) {
      xxxxxxx
 }
-
-
-java并发线程实战，并发编程艺术，多处理器编程的艺术
-
-quasar
 
   Wait()方法和notify()方法：当一个线程执行到wait()方法时(线程休眠且释放机锁)，它就进入到一个和该对象相关的等待池中，
 同时失去了对象的机锁。当它被一个notify()方法唤醒时，等待池中的线程就被放到了锁池中。该线程从锁池中获得机锁，然后回到wait()前的中断现场。
