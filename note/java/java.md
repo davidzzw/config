@@ -68,25 +68,6 @@ keytool 的 JDK 工具
 -Dcom.sun.management.jmxremote.authenticate=false
 -Djava.rmi.server.hostname=127.0.0.1
 
-优点： 
-1.在单例模式中，活动的单例只有一个实例，对单例类的所有实例化得到的都是相同的一个实例。这样就 防止其它对象对自己的实例化，确保所有的对象都访问一个实例 
-2.单例模式具有一定的伸缩性，类自己来控制实例化进程，类就在改变实例化进程上有相应的伸缩性。 
-3.提供了对唯一实例的受控访问。 
-4.由于在系统内存中只存在一个对象，因此可以 节约系统资源，当 需要频繁创建和销毁的对象时单例模式无疑可以提高系统的性能。 
-5.允许可变数目的实例。 
-6.避免对共享资源的多重占用。
-
-
-
-但对于方法参数的日志倒是可以自动化：
-
-@RequestMapping("/access_token")
-@IgnoreLogin
-public ResponseEntity<Resp> accessToken(@RequestParam("auth_token") @LogMask String authToken,
-    @RequestHeader("X-Xxxx-Device-Id") @LogMask String deviceId, String env, HttpServletRequest request) {
-     xxxxxxx
-}
-
   Wait()方法和notify()方法：当一个线程执行到wait()方法时(线程休眠且释放机锁)，它就进入到一个和该对象相关的等待池中，
 同时失去了对象的机锁。当它被一个notify()方法唤醒时，等待池中的线程就被放到了锁池中。该线程从锁池中获得机锁，然后回到wait()前的中断现场。
 
