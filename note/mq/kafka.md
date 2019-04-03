@@ -100,6 +100,8 @@ leader来维护：leader有单独的线程定期检测ISR中follower是否脱离
 
 ###LSO
 
+###LEO
+
 ###LW
 
 ###Log Retention
