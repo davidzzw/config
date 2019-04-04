@@ -23,7 +23,7 @@
 * `-XX:+ParallelGCThreads`：`设置用于垃圾回收的线程数。通常情况下可以和 CPU 数量相等。但在 CPU 数量比较多的情况下，设置相对较小的数值也是合理的`
 * `-XX:+MaxGCPauseMills`：`设置最大垃圾收集停顿时间。它的值是一个大于 0 的整数。收集器在工作时，会调整 Java 堆大小或者其他一些参数，尽可能地把停顿时间控制在 MaxGCPauseMills 以内`
 * `-XX:+GCTimeRatio`:`设置吞吐量大小，它的值是一个 0-100 之间的整数。假设 GCTimeRatio 的值为 n，那么系统将花费不超过 1/(1+n) 的时间用于垃圾收集`
-* `-XX:+HeapDumpOnOutOfMemoryError`:
+* `-XX:+OmitStackTraceInFastThrowr`:
 * ` -XX:HeapDumpPath=/tmp`
 * `-verbose:gc`
 * `-XX:+CMSClassUnloadingEnabled `
@@ -31,6 +31,14 @@
 * `-XX:SurvivorRatio`: `Eden 区和 Survivor 区的比例 `
 * `-XX:+MaxTenuringThreshold `
 * `-XX:TargetSurvivorRatio`:`如果单个 Survivor 区已经被占用了 50%,那么较高复制次数的对象也会被晋升至老年代 `
+* `-XX:ErrorFile`
+* `-XX:+ParallelRefProcEnabled `
+* `-XX:-UseBiasedLocking`
+* ` -XX:-UseCounterDecay`
+* ` -XX:AutoBoxCacheMax`
+* `-XX:+PerfDisableSharedMem`
+* `-XX:-DisplayVMOutput`
+* `-XX:+LogVMOutput `
 
 #### 编译
 
@@ -80,6 +88,7 @@
 * `-XX:+PrintGCDetails`
 * `-XX:+PrintGCDateStamps`
 * `-Xloggc:/tmp/gc.log` 
+* `-XX:LogFile`
 * `-XX:+UseGCLogFileRotation`:`这个参数支持GC日志的滚动输出，默认是关闭的，所以大家要想滚动输出GC日志可以通过这个参数来设定GC日志并不是根据时间来进行滚动，而是当文件大小达到多大的时候就切换到下一个GC文件里`
 * `-XX:GCLogFileSize=100K`:`就是用来指定当当前GC日志文件大小达到100KB的时候就写入到下一个GC日志文件里，如果当前文件已经是最后一个了，那下一个目标GC日志文件将会是0号GC日志文件`
 * `-XX:NumberOfGCLogFiles=100`:`可以通过这个参数来指定要滚动输出的GC日志文件个数，日志名在上面提到的-Xloggc参数指定的路径后面加上序号，默认从0号开始，那什么时候换到下一个文件输出呢？`
@@ -92,7 +101,6 @@
 * `-XX:+PrintStubCode`:`查看运行时生成的stubs`
 * `-XX:+UnlockDiagnosticVMOptions`
 * `-XX:+ShowHiddenFrames`
-* `-XX:+UnlockDiagnosticVMOptions`
 * `-XX:+UseTLAB`
 
 #### 逃逸
@@ -181,6 +189,14 @@
 * `-XXnoSystemGC`
 * `-XXfullSystemGC`
 * `-XX:-UseCounterDecay`:`禁用计数器衰减的`
+
+#### 编码
+
+* `-Dfile.encoding=UTF-8`
+
+#### 时区
+
+
 
 ### 查看jvm启动参数
 
