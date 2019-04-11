@@ -68,6 +68,17 @@ DescribeGroup请求：显示组的所有信息，包括成员信息，协议名�
 
 `二分法查找`
 
+#### 日志清理策略
+
+* `日志删除（Log Deletion）`：`按照一定的保留策略来直接删除不符合条件的日志分段`
+* `日志压缩（Log Compaction）`：`针对每个消息的key进行整合，对于有相同key的的不同value值，只保留最后一个版本`
+
+#### 日志分段的保留策略
+
+* `基于时间的保留策略`
+* `基于日志大小的保留策略`
+* `基于日志起始偏移量的保留策略`:`基于 logStartOffset来实现的`
+
 ### partition
 
 ####segment
@@ -79,10 +90,8 @@ DescribeGroup请求：显示组的所有信息，包括成员信息，协议名�
 ```
 Kafka的ISR的管理最终都会反馈到Zookeeper节点上。具体位置为：/brokers/topics/[topic]/partitions/[partition]/state。目前有两个地方会对这个Zookeeper的节点进行维护：
 Controller来维护：Kafka集群中的其中一个Broker会被选举为Controller，主要负责Partition管理和副本状态管理，也会执行类似于重分配partition之类的管理任务。在符合某些特定条件下，Controller下的LeaderSelector会选举新的leader，ISR和新的leader_epoch及controller_epoch写入Zookeeper的相关节点中。同时发起LeaderAndIsrRequest通知所有的replicas。
-leader来维护：leader有单独的线程定期检测ISR中follower是否脱离ISR, 如果发现ISR变化，则会将新的ISR的信息返回到Zookeeper的相关节点中。
+leader来维护：leader有单独的线程定期检测ISR中follower是否脱离ISR, 如果发现ISR变化，则会将新的ISR的信息返回到Zookeeper的相关节点中
 ```
-
-
 
 ###OSR（Outof-Sync Replicas）
 
@@ -102,15 +111,25 @@ leader来维护：leader有单独的线程定期检测ISR中follower是否脱离
 
 ###LEO
 
-###LW
+###LW(Low Watermark)
 
 ###Log Retention
 
-###Log Compaction
+### 性能指标
+
+```
+消息中间件的性能一般是指吞吐量。抛开硬件资源的影响，消息写入的吞吐量还会受到消息大小、消息压缩方式、消息发送方式（同步/异步）、消息确认类型（acks）、副本因子等参数的影响，消息消费的吞吐量还会受到应用逻辑处理速度的影响。
+```
 
 ### 参数
 
-
+*  `log.retention.check.interval.ms`:`一个专门的日志删除任务来周期性地检测和删除不符合保留条件的日志分段文件`
+*  `log.cleanup.policy`:`日志清理策略`
+*  `log.cleaner.enable`
+*  `log.retention.hours`
+*  `log.retention.minutes`
+*  `log.retention.ms`
+*  `file.delete.delay.ms`
 
 ### 面试题
 

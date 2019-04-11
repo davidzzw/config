@@ -26,19 +26,10 @@
 * `-XX:+OmitStackTraceInFastThrowr`:
 * ` -XX:HeapDumpPath=/tmp`
 * `-verbose:gc`
-* `-XX:+CMSClassUnloadingEnabled `
-* `-XX:+PrintInlining`:`来打印编译过程中的内联情况 `
 * `-XX:SurvivorRatio`: `Eden 区和 Survivor 区的比例 `
 * `-XX:+MaxTenuringThreshold `
 * `-XX:TargetSurvivorRatio`:`如果单个 Survivor 区已经被占用了 50%,那么较高复制次数的对象也会被晋升至老年代 `
 * `-XX:ErrorFile`
-* `-XX:+ParallelRefProcEnabled `
-* `-XX:-UseBiasedLocking`
-* ` -XX:-UseCounterDecay`
-* ` -XX:AutoBoxCacheMax`
-* `-XX:+PerfDisableSharedMem`
-* `-XX:-DisplayVMOutput`
-* `-XX:+LogVMOutput `
 
 #### 编译
 
@@ -63,6 +54,13 @@
 开启UseCodeCacheFlushing导致问题 : CodeCache空间降了一半，方法编译工作仍然可能不会重启; flushing可能导致高的cpu使用，从而影响性能下降
 ```
 
+####PerfData
+
+* `-XX:-UsePerfData`
+
+
+* `-XX:+PerfDisableSharedMem`:`该参数决定了存储PerfData的内存是不是可以被共享，也就是说不管这个参数设置没设置，jvm在启动的时候都会分配一块内存来存PerfData，只是说这个PerfData是不是其他进程可见的问题，如果设置了这个参数，说明不能被共享，此时其他进程将访问不了该内存，这样一来，譬如我们jps，jstat等都无法工作。默认这个参数是关闭的，也就是默认支持共享的方式`
+
 ####Safepoint
 
 * `-XX:+PrintSafepointStatistics`
@@ -82,6 +80,7 @@
 
 * `-Xcomp`:` jvm运行在纯编译模式 `
 * `-XX:+TieredCompilation `:`开启分层编译模式 `
+* ` -XX:-UseCounterDecay`：`禁止JIT调用计数器衰减。默认情况下，每次GC时会对调用计数器进行砍半的操作，导致有些方法一直是个温热，可能永远都达不到C2编译的1万次的阀值`
 
 ####日志相关
 
@@ -95,6 +94,12 @@
 * `UseGCLogFileRotation`:`控制打开这个开关，NumberOfGCLogFiles控制滚动的日志个数，GCLogFileSize控制文件达到多少的时候写入到下一个gc日志文件里`
 * `-XX:+PrintInterpreter`:`得到运行时日志`
 * `-XX:+PrintGCApplicationStoppedTime`
+* `-XX:+LogVMOutput `
+* `-XX:-DisplayVMOutput`
+
+#### 装箱拆箱
+
+* ` -XX:AutoBoxCacheMax`:`选项来指定high的值，当第一次使用Integer类型数据时，会加载IntegerCache这个静态内部类对象，然后在执行类的静态初始化，这个初始化会获取JVM的属性设置`
 
 #### 栈帧
 
@@ -111,8 +116,8 @@
 
 #### 内联
 
-* `-XX:+PrintCompilation` :`确认某个方法有没有被JIT编译`
-* `-XX:+PrintInlining `
+* `-XX:+PrintCompilation` :`确认某个方法有没有被JIT编译` 
+* `-XX:+PrintInlining`:`来打印编译过程中的内联情况 `
 
 ####RootType
 
@@ -176,6 +181,10 @@
 
 #### G1相关参数
 
+#### vm
+
+* `-XX:+ParallelRefProcEnabled `:` 这个选项可以用HotSpot VM的任何一种垃圾回收器上，他会是用多个的引用处理线程，而不是单个线程。这个选项不会启用多线程运行方法的finalizer。他会使用很多线程去发现需要排队通知的finalizable对象`
+
 ####循环预测（Loop Prediction）
 
 * `-XX:+UseLoopPredicate`
@@ -189,6 +198,10 @@
 * `-XXnoSystemGC`
 * `-XXfullSystemGC`
 * `-XX:-UseCounterDecay`:`禁用计数器衰减的`
+
+####锁
+
+* `-XX:-UseBiasedLocking`:`禁用偏向锁`
 
 #### 编码
 
@@ -209,6 +222,21 @@
 `jps -v |grep pid`: `查看jvm启动参数不全`
 
 `jcmd pid VM.flags`:`查看jvm启动参数`
+
+###查看停顿–安全点停顿日志
+
+要查看安全点停顿，可以打开安全点日志，通过设置JVM参数 `-XX:+PrintGCApplicationStoppedTime` 会打出系统停止的时间，添加`-XX:+PrintSafepointStatistics -XX:PrintSafepointStatisticsCount=1` 这两个参数会打印出详细信息，可以查看到使用偏向锁导致的停顿，时间非常短暂，但是争用严重的情况下，停顿次数也会非常多；
+
+注意：安全点日志不能一直打开： 
+1. 安全点日志默认输出到stdout，一是stdout日志的整洁性，二是stdout所重定向的文件如果不在/dev/shm，可能被锁。 
+2. 对于一些很短的停顿，比如取消偏向锁，打印的消耗比停顿本身还大。 
+3. 安全点日志是在安全点内打印的，本身加大了安全点的停顿时间。
+
+所以安全日志应该只在问题排查时打开。 
+如果在生产系统上要打开，再再增加下面四个参数： 
+`-XX:+UnlockDiagnosticVMOptions -XX: -DisplayVMOutput -XX:+LogVMOutput -XX:LogFile=/dev/shm/vm.log`
+
+打开Diagnostic（只是开放了更多的flag可选，不会主动激活某个flag），关掉输出VM日志到stdout，输出到独立文件,/dev/shm目录（内存文件系统）。
 
 ###示例一
 
@@ -249,39 +277,58 @@
 ### 示例二
 
 ```
--Xms3g -Xmx3g -XX:NewSize=1g -XX:MaxNewSize=1g -XX:PermSize=256m -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -XX:CMSFullGCsBeforeCompaction=5 -XX:+UseCMSCompactAtFullCollection -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -XX:+DisableExplicitGC -XX:+UseCompressedOops -XX:+DoEscapeAnalysis -XX:MaxTenuringThreshold=10 -verbose:gc -Xloggc:/alidata1/admin/logs/gc.log -XX:+PrintGCDetails
-####################CMS
-ERROR_LOG_DIR="/data/www/wifiin/logs/jvm"
-JAVA_OPTS=" $JAVA_OPTS -server "
-JAVA_OPTS=" $JAVA_OPTS -Xmx4000M -Xms4000M -Xmn600M "
-JAVA_OPTS=" $JAVA_OPTS -XX:LargePageSizeInBytes=128M -XX:MaxDirectMemorySize=512m "
-JAVA_OPTS=" $JAVA_OPTS -XX:+UseConcMarkSweepGC " 
-JAVA_OPTS=" $JAVA_OPTS -XX:+CMSScavengeBeforeRemark -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=75 "
-JAVA_OPTS=" $JAVA_OPTS -XX:+AlwaysPreTouch -XX:+UseStringDeduplication -XX:MaxTenuringThreshold=2 -XX:+CMSClassUnloadingEnabled -XX:-UseCounterDecay -XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses -XX:+ExplicitGCInvokesConcurrent -XX:SoftRefLRUPolicyMSPerMB=0 -XX:-OmitStackTraceInFastThrow -XX:-UseBiasedLocking -XX:+UseCodeCacheFlushing -XX:+UseLargePages "
-JAVA_OPTS=" $JAVA_OPTS -XX:ErrorFile=${ERROR_LOG_DIR}/hs_err_%p.log "
-JAVA_OPTS=" $JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${ERROR_LOG_DIR} “
-JAVA_OPTS=“ $JAVA_OPTS -XX:+ParallelRefProcEnabled "
-JAVA_OPTS=" $JAVA_OPTS -Djava.security.egd=file:/dev/urandom “
-JAVA_OPTS=" $JAVA_OPTS -XX:+UseNUMA"
-JAVA_OPTS=" $JAVA_OPTS -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=8888 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
-JAVA_OPTS=" $JAVA_OPTS -XX:+PrintCommandLineFlags -XX:+PrintClassHistogram
--XX:+PrintGCDetails -XX:+PrintGCDateStamps 
+-Xms3g -Xmx3g -XX:NewSize=1g -XX:MaxNewSize=1g -XX:PermSize=256m -XX:MaxPermSize=256m 
+-XX:LargePageSizeInBytes=128M 
+-XX:MaxDirectMemorySize=512m
+-XX:+UseConcMarkSweepGC
+-XX:+CMSScavengeBeforeRemark 
+-XX:+CMSParallelRemarkEnabled 
+-XX:+UseCMSInitiatingOccupancyOnly
+-XX:CMSInitiatingOccupancyFraction=75
+-XX:CMSFullGCsBeforeCompaction=5
+-XX:+UseCMSCompactAtFullCollection 
+-XX:+AlwaysPreTouch 
+-XX:+UseStringDeduplication 
+-XX:MaxTenuringThreshold=2 
+-XX:+CMSClassUnloadingEnabled 
+-XX:-UseCounterDecay 
+-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses 
+-XX:+ExplicitGCInvokesConcurrent 
+-XX:SoftRefLRUPolicyMSPerMB=0 
+-XX:-OmitStackTraceInFastThrow 
+-XX:-UseBiasedLocking 
+-XX:+UseCodeCacheFlushing 
+-XX:+UseLargePages
+-XX:ErrorFile=${ERROR_LOG_DIR}/hs_err_%p.log
+-XX:+HeapDumpOnOutOfMemoryError 
+-XX:HeapDumpPath=${ERROR_LOG_DIR}
+-XX:+ParallelRefProcEnabled
+-Djava.security.egd=file:/dev/urandom
+-XX:+UseNUMA
+-Djava.rmi.server.hostname=127.0.0.1
+-Dcom.sun.management.jmxremote
+-Dcom.sun.management.jmxremote.port=8888 
+-Dcom.sun.management.jmxremote.authenticate=false 
+-Dcom.sun.management.jmxremote.ssl=false
+-Djava.util.concurrent.ThreadJoinPool.common.parallelism=500
+-verbose:gc
+-XX:+PrintCommandLineFlags
+-XX:+PrintClassHistogram
+-XX:+PrintGCDetails
+-XX:+PrintGCDateStamps 
 -XX:+PrintHeapAtGC
 -XX:+PrintGCApplicationStoppedTime 
--Xloggc:${ERROR_LOG_DIR}/gc.log “
-JAVA_OPTS=" $JAVA_OPTS 
+-Xloggc:${ERROR_LOG_DIR}/gc.log
 -XX:+UseGCLogFileRotation 
 -XX:NumberOfGCLogFiles=2 
--XX:GCLogFileSize=1024M "
-JAVA_OPTS=“ $JAVA_OPTS 
--XX:+PrintGCApplicationStoppedTime 
--XX:+PrintGCApplicationConcurrentTime"
-JAVA_OPTS=“ $JAVA_OPTS 
--Djava.util.concurrent.ThreadJoinPool.common.parallelism=500
-JAVA_OPTS=" $JAVA_OPTS 
+-XX:GCLogFileSize=1024M
+-XX:+PrintGCApplicationConcurrentTime
 -XX:+LogCommercialFeatures 
--XX:+UnlockCommercialFeatures
--XX:+FlightRecorder "
+-XX:+UnlockCommercialFeatures 
+-XX:+FlightRecorder
+-XX:+DisableExplicitGC 
+-XX:+UseCompressedOops
+-XX:+DoEscapeAnalysis
 ```
 
 ### 案例一	

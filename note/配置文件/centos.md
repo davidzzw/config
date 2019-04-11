@@ -9,12 +9,9 @@ grant all on xxxx.* to 'root'@'%' identified by 'password' with grant option;
 -A INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT
 -A INPUT -p tcp -m state --state NEW -m tcp --dport 8080 -j ACCEPT
 
-lsof -i tcp:80
 netstat -tln
 netstat -lnp|grep 88  
 netstat -nap 
-
-nohup python api.py & 
 
 列出所有端口
 netstat -ntlp
@@ -32,3 +29,14 @@ done
 比如，有一个目录下每天会生成一个备份目录，但是我们并不需要这么多，只需要保存最新的 10 个目录就好了，这样的话 awk 就能派上用场了
 
 ls -lt | grep drwx | awk '{if(NR>10){print $9}}' | xargs -I {} rm -rf {}
+
+
+
+l  /proc/sys/vm/dirty_expire_centisecs
+数据存在的时间超过了dirty_expire_centisecs（默认30s）时间
+l  /proc/sys/vm/dirty_background_ratio  
+脏页率超过dirty_background_ratio指标会启动pdflush开始Flush Dirty PageCache
+l  /proc/sys/vm/dirty_ratio
+脏页率超过dirty_ratio指标会阻塞所有的写操作来进行Flush
+
+###内核文件系统
