@@ -40,3 +40,10 @@ l  /proc/sys/vm/dirty_ratio
 脏页率超过dirty_ratio指标会阻塞所有的写操作来进行Flush
 
 ###内核文件系统
+
+### 零拷贝
+
+### 用户态
+
+### 内核态
+
