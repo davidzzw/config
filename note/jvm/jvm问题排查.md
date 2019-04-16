@@ -14,12 +14,19 @@
 
 * `jps`：`列出相关的java进程, 以及对应的pid也可以使用如下命令来尝试 ps aux | grep java --color   `
 * `top -Hp <pid>`:`按ctrl+t, 按时间消耗来进行排序`
-
 * `ps -eLf | awk '$2 ~/<pid>/ {print "pid:", $2, " lwp:", $4, " pcpu:", $5}' | sort -k6nr    `
 * `ps -eLf | head -n 1         `
 * `top -Hp 9179 -d 1 -n 1 `
 * `ps -Lfp pid `
 * `ps -mp pid -o THREAD，tid，time `
+
+### OOM
+
+#### CodeCache
+
+#### 堆外内存
+
+####64m
 
 ###jmap排查问题
 

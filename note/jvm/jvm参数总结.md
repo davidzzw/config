@@ -133,23 +133,14 @@
 
 * `-XX:+UseConcMarkSweepGC `:`使用CMS垃圾回收期 `
 * `-XX:+ExplicitGCInvokesConcurrent `:`使用CMS收集器来触发Full gc `
-* `-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses`: `保证当有系统GC调用时，永久代也被包括进CMS垃圾回收的范围内 `
 
-- `-XX:+UseCMSCompactAtFullCollection`:`收集开关参数（默认就是开启的)，用于在CMS收集器进行FullGC完开启内存碎片的合并整理过程参数可以使 CMS 在垃圾收集完成后，进行一次内存碎片整理。内存碎片的整理并不是并发进行`
+- `-XX:UseCMSInitatingOccupancyOnly`：`表示只在到达阈值的时候，才进行CMS回收`
+- `-XX:+CMSIncrementalMode`：`使用增量模式，比较适合单CPU`
+- `-XX:+CMSParallelRemarkEnabled `:`降低标记停顿 `
 
-- `-XX:UseCMSInitatingOccupancyOnly`：`表示只在到达阈值的时候，才进行 CMS 回收`
+#####线程
 
 - `-XX:+ParallelCMSThreads`:`CMS默认启动的回收线程数目是(ParallelGCThreads+3)/4，如果你需要明确设定，可以通过-XX:+ParallelCMSThreads来设定，其中-XX:+ParallelGCThreads代表的年轻代的并发收集线程数目`
-
-- `-XX:+CMSClassUnloadingEnabled`：` 允许对元类数据进行回收`
-
-- `-XX:+CMSInitatingPermOccupancyFraction`：`当永久区占用率达到这一百分比后，启动 CMS 回收 (前提是-XX:+CMSClassUnloadingEnabled 激活了)`
-
-- `-XX:+CMSIncrementalMode`：`使用增量模式，比较适合单 CPU``
-
-- ``-XX:+UseCMSCompactAtFullCollection`:`
-
-- `-XX:+UseFullGCsBeforeCompaction`：`设定进行多少次 CMS 垃圾回收后，进行一次内存压缩`
 
 - `-XX：ConcGCThreads`:
 
@@ -162,22 +153,43 @@
   只有在生产系统中测量(或类生产测试系统)发现应用程序的暂停时间的目标没有达到 , 就可以通过这些标志应该进行GC调优
   ```
 
+- `CMSParallelInitialMarkEnabled`:``
+
 - `-XX:+UseCMSInitiatingOccupancyOnly`: `如果需要根据 CMSInitiatingOccupancyFraction 的值进行判断，需要设置参数CMSInitiatingOccupancyFraction,使用手动定义初始化定义开始CMS收集,禁止hostspot自行触发CMS GC`
 
 `我们用-XX+UseCMSInitiatingOccupancyOnly标志来命令JVM不基于运行时收集的数据来启动CMS垃圾收集周期。而是，当该标志被开启时，JVM通过CMSInitiatingOccupancyFraction的值进行每一次CMS收集，而不仅仅是第一次。然而，请记住大多数情况下，JVM比我们自己能作出更好的垃圾收集决策。因此，只有当我们充足的理由(比如测试)并且对应用程序产生的对象的生命周期有深刻的认知时，才应该使用该标志`
 
-- `-XX:CMSInitiatingOccupancyFraction`:` 判断当前老年代使用率是否大于阈值，则触发 cms gc`
-- `-XX:CMSCompactWhenClearAllSoftRefs`:` 默认为 true`
-- `-XX:CMSFullGCsBeforeCompaction=0` :`而且默认就是开启且每次full gc后整理old区内存碎片问题 cms gc不会整理内存碎片，但是full gc会`
+- `-XX:CMSInitiatingOccupancyFraction`:` 判断当前老年代使用率是否大于阈值，则触发cms gc`
+- `-XX:CMSCompactWhenClearAllSoftRefs`:` 默认为true`
+
+#####YGC
+
+* `-XX:CMSScavengeBeforeRemark `:`开启或关闭在 CMS-remark 阶段之前的清除（Young GC）尝试`
+* ​
+
+#####方法区
+
+- `-XX:+CMSClassUnloadingEnabled`：` 允许对元类数据进行回收`
 - `-XX:+CMSPermGenSweepingEnabled`:`是否会清理持久代`
+- `-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses`: `保证当有系统GC调用时，永久代也被包括进CMS垃圾回收的范围内 `
+- `-XX:+CMSInitatingPermOccupancyFraction`：`当永久区占用率达到这一百分比后，启动CMS回收 (前提是-XX:+CMSClassUnloadingEnabled 激活了)`
 - `-XX:+CMSInitiatingPermOccupancyFraction `:`设置Perm Gen使用到达多少比率时触发 `
 - `-XX:+CMSClassUnloadingEnabled`:` 在使用CMS垃圾回收机制的时候是否启用类卸载功能,如果希望对永久代进行垃圾回收，可用设置标志-XX:+CMSClassUnloadingEnabled`
+
+#####可中断预清理
+
 - `-XX:+CMSScheduleRemarkEdenSizeThreshold `:`新生代Eden区的内存使用量大于参数 `
+- `CMSScheduleRemarkEdenPenetration`
+- `CMSMaxAbortablePrecleanLoops`
+- `CMSMaxAbortablePrecleanTime`
+
+#####压缩
+
+- `-XX:+UseCMSCompactAtFullCollection`:`收集开关参数（默认就是开启的)，用于在CMS收集器进行FullGC完开启内存碎片的合并整理过程参数可以使 CMS 在垃圾收集完成后，进行一次内存碎片整理。内存碎片的整理并不是并发进行`
 - `-XX:+UseCMSCompactAtFullCollection `:`用于在Full GC之后增加一个碎片整理`
-- `-XX:+CMSFullGCsBeforeCompaction `:`多少次后进行内存压缩 `
+- `-XX:CMSFullGCsBeforeCompaction=0` :`而且默认就是开启且每次full gc后整理old区内存碎片问题 cms gc不会整理内存碎片，但是full gc会`
+- `-XX:+UseFullGCsBeforeCompaction`：`设定进行多少次CMS 垃圾回收后，进行一次内存压缩`
 - `-XX:+CMSScavengeBeforeRemark `:`开启或关闭在CMS重新标记阶段之前的清除（YGC）尝试,CMS remark阶段前会触发一次minor GC `
-- `-XX:+CMSParallelRemarkEnabled `:`降低标记停顿 `
-- `-XX:+CMSIncrementalMode `:`设置为增量模式 ,用于单CPU情况`
 
 #### G1相关参数
 
@@ -189,7 +201,7 @@
 
 * `-XX:+UseLoopPredicate`
 
-#### **UseParallelGC** 或 UseParallelOldGC
+#### UseParallelGC 或 UseParallelOldGC
 
 * `-XX:+ScavengeBeforeFullGC `:`当它启用并且当前在使用 +UseParallelGC或+UseParallelOldGC时触发full GC就会先用PSScavenge来收集一次young gen（也就是做一次minor GC），然后再用PSMarkSweep（如果用+UseParallelOldGC）或PSParallelCompact（如果用+UseParallelOldGC）来收集一到多次全堆`
 
@@ -329,6 +341,26 @@
 -XX:+DisableExplicitGC 
 -XX:+UseCompressedOops
 -XX:+DoEscapeAnalysis
+```
+
+### 示例三
+
+```
+-Xmx4096M -Xms4096M -Xmn1536M 
+-XX:MaxMetaspaceSize=512M -XX:MetaspaceSize=512M 
+-XX:+UseConcMarkSweepGC 
+-XX:+UseCMSInitiatingOccupancyOnly 
+-XX:CMSInitiatingOccupancyFraction=70 
+-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses 
+-XX:+CMSClassUnloadingEnabled 
+-XX:+ParallelRefProcEnabled 
+-XX:+CMSScavengeBeforeRemark 
+-XX:ErrorFile=/home/admin/logs/xelephant/hs_err_pid%p.log 
+-Xloggc:/home/admin/logs/xelephant/gc.log 
+-XX:HeapDumpPath=/home/admin/logs/xelephant 
+-XX:+PrintGCDetails 
+-XX:+PrintGCDateStamps 
+-XX:+HeapDumpOnOutOfMemoryError
 ```
 
 ### 案例一	
