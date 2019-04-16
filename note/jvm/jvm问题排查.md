@@ -88,7 +88,7 @@
 
 * `jcmd pid GC.class_stats | awk '{print $13}' | sort | uniq -c | sort -nrk1 > topclass.txt `
 
-###查看Code Cache大小
+*查看Code Cache大小*
 
 * `jinfo -flag ReservedCodeCacheSize pid`
 
