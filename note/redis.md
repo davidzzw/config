@@ -51,8 +51,6 @@ zrank myzset "a"
 如果成员在有序集合不存在或键不存在，字符串返回nil
 ```
 
-###LRU
-
 ###save和bgsave区别
 
 ####save
@@ -65,21 +63,71 @@ zrank myzset "a"
 - `优点`:`BGSAVE 则 fork 出一个子进程，子进程负责调用 rdbSave ，并在保存完成之后向主进程发送信号，通知保存已完成。 Redis 服务器在BGSAVE 执行期间仍然可以继续处理客户端的请求`
 - `缺点`:`由于会fork一个进程，因此更消耗内存`
 
-###3种过期策略
+#### 缓存淘汰策略
+
+- `volatile-lru -> 删除lru算法即将过期的key`
+- `allkeys-lru -> 删除lru算法的key`
+- `volatile-lfu -> 删除lfu算法即将过期的key`
+- `allkeys-lfu -> 删除lfu算法的key`
+- `volatile-random -> 随机删除即将过期key`
+- `allkeys-random -> 随机删除key`
+- `volatile-ttl -> 删除即将过期的`
+- `noeviction -> 啥都不做抛出异常`
+
+## LFU与LRU
+
+```c
+typedef struct redisObject {
+    unsigned type:4;
+    unsigned encoding:4;
+    unsigned lru:LRU_BITS; /* LRU time (relative to global lru_clock) or
+                            * LFU data (least significant 8 bits frequency
+                            * and most significant 16 bits access time). */
+    int refcount;
+    void *ptr;
+} robj;
+```
 
 ```
-定时删除
+在上面的字段中有定义一个24位的字段lru(取名不要那么在意细节)，LRU是通过24位以单位为秒计算，LFU是是以前16位代表时间加后8位代表频率计算。 ok,咱们对于redisObject先了解到这。
+```
+
+####LRU源码分析
+
+```
+前面有介绍到redisOBject维护了一个24位的时间字段，可以认为是一个时间戳字段，然后每隔一定时间会更新这个字段值，每一个key都维护了这么一个24位的字段。如果我现在要进行LRU，那么首先拿到全局时间戳字段与key的内部时间戳字段想减，差值最大的key选择淘汰，这里需要注意一点24位以秒为单位最多也就是194天，所以会出现大于全局时间戳的情况，此时会选择相加
+```
+
+####LFU源码分析
+
+```
+LFU把原来的key对象的内部时钟的24位分成两部分，前16位还代表时间戳，后8位代表频率。16位的情况下如果还按照秒为单位就会导致不够用，所以一般这里以时钟为单位。而后8位表示当前key对象的访问频率，8位只能代表255，但是redis并没有采用线性上升的方式，而是通过一个复杂的公式。 通过配置两个参数来调整数据的递增速度。 这两个参数为lfu-log-factor默认值10与lfu-decay-time默认值1，redis.conf中进行配置
+```
+
+###3种过期策略
+
+#### 定时删除
+
+```
 含义：在设置key的过期时间的同时，为该key创建一个定时器，让定时器在key的过期时间来临时，对key进行删除
 优点：保证内存被尽快释放
 缺点：
 若过期key很多，删除这些key会占用很多的CPU时间，在CPU时间紧张的情况下，CPU不能把所有的时间用来做要紧的事儿，还需要去花时间删除这些key
 定时器的创建耗时，若为每一个设置过期时间的key创建一个定时器（将会有大量的定时器产生），性能影响严重
 没人用
-惰性删除
+```
+
+#### 惰性删除
+
+```
 含义：key过期的时候不删除，每次从数据库获取key的时候去检查是否过期，若过期，则删除，返回null。
 优点：删除操作只发生在从数据库取出key的时候发生，而且只删除当前key，所以对CPU时间的占用是比较少的，而且此时的删除是已经到了非做不可的地步（如果此时还不删除的话，我们就会获取到了已经过期的key了）
 缺点：若大量的key在超出超时时间后，很久一段时间内，都没有被获取过，那么可能发生内存泄露（无用的垃圾占用了大量的内存）
-定期删除
+```
+
+####定期删除
+
+```
 含义：每隔一段时间执行一次删除(在redis.conf配置文件设置hz，1s刷新的频率)过期key操作
 优点：
 通过限制删除操作的时长和频率，来减少删除操作对CPU时间的占用--处理"定时删除"的缺点
@@ -87,6 +135,9 @@ zrank myzset "a"
 缺点
 在内存友好方面，不如"定时删除"
 在CPU时间友好方面，不如"惰性删除"
+```
+
+```
 难点
 合理设置删除操作的执行时长（每次删除执行多长时间）和执行频率（每隔多长时间做一次删除）（这个要根据服务器运行情况来定了）
 定时删除和定期删除为主动删除：Redis会定期主动淘汰一批已过去的key
@@ -327,9 +378,18 @@ f093c80dde814da99c5cf72a7dd01590792b783b 127.0.0.1:7006 slave 3c3a0c74aae0b56170
 CLUSTER REPLICATE <master-node-id>
 ```
 
-- 集群会在有从节点数量最多的主节点上进行从节点的迁移.
-- 要在一个主节点上添加多个从节点.
-- 参数来控制从节点迁移 replica-migration-barrier:你可以仔细阅读redis.conf 。
+- `集群会在有从节点数量最多的主节点上进行从节点的迁移`
+- `要在一个主节点上添加多个从节点`
+- `参数来控制从节点迁移 replica-migration-barrier:你可以仔细阅读redis.conf `
+
+###参数
+
+| lazyfree-lazy-eviction               | 删除dict中的key,释放内存的任务异步处理 | no        |
+| ------------------------------------ | ----------------------- | --------- |
+| lazyfree-lazy-expire                 | 把删除key的任务提交给后台线程做       | no        |
+| lazyfreelazyserver-del               | 删除dict中的key引用,删除key异步处理 | no        |
+| lslave-lazy-flush/replica-lazy-flush | 新建dict等数据结构，清空数据库异步处理   | no        |
+| hz                                   | 1s除以hz就是执行频率            | 1～500默认10 |
 
 ### 面试题
 
@@ -412,17 +472,11 @@ Redis可以使用主从同步，从从同步。第一次同步时，主节点做
 
 ```
 (1) Master最好不要做任何持久化工作，如RDB内存快照和AOF日志文件
-
 (Master写内存快照，save命令调度rdbSave函数，会阻塞主线程的工作，当快照比较大时对性能影响是非常大的，会间断性暂停服务，所以Master最好不要写内存快照;AOF文件过大会影响Master重启的恢复速度)
-
 (2) 如果数据比较重要，某个Slave开启AOF备份数据，策略设置为每秒同步一次
-
 (3) 为了主从复制的速度和连接的稳定性，Master和Slave最好在同一个局域网内
-
 (4) 尽量避免在压力很大的主库上增加从库
-
 (5) 主从复制不要用图状结构，用单向链表结构更为稳定，即：Master <- Slave1 <- Slave2 <- Slave3…
-
 这样的结构方便解决单点故障问题，实现Slave对Master的替换。如果Master挂了，可以立刻启用Slave1做Master，其他不变。
 ```
 

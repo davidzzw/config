@@ -1,14 +1,14 @@
 ### docker
 
-####数据卷
+#### 数据卷
 
-#####介绍
+##### 介绍
 
 ```
 数据卷就是可以让你把主机上的数据以挂载的方式链接到容器中，这样不同的容器也能共享，而且数据也不会因为容器的退出而丢失。
 ```
 
-#####使用
+##### 使用
 
 ```
 docker run -d -v ~/mynginx:/a -p 80:80 --name webserver nginx
@@ -17,7 +17,7 @@ docker run -d -v ~/mynginx:/a -p 80:80 --name webserver nginx
 我们也可以创建数据卷容器，数据卷容器也是一个正常的容器，这种容器可以为其他容器提供和共享数据。
 ```
 
-#####创建
+##### 创建
 
 ```
 docker run -d -v /dbdata --name dbdata training/postgres echo Data-only container for postgres
@@ -40,12 +40,10 @@ kubectl exec -ti pod-name -c container-name /bin/bash
 
 
 
-nohup java -jar sentinel-dashboard.jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8005,server=y,suspend=y  --server.port=8082 &
- nohup java -jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8005,server=y,suspend=n web-0.0.1-SNAPSHOT.jar --server.port=18080 2>&1 > /dev/null &  
+`nohup java -jar sentinel-dashboard.jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8005,server=y,suspend=y  --server.port=8082 &
+ nohup java -jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8005,server=y,suspend=n web-0.0.1-SNAPSHOT.jar --server.port=18080 2>&1 > /dev/null &  `
 
-
-
-###命令
+### 命令
 
 ```
 systemctl start etcd

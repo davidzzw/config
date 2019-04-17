@@ -2,7 +2,7 @@
 
 `ps -p pid  -o  etime`
 
-###jstat排查问题
+### jstat排查问题
 
 * `jstat -gcutil pid`
 * `jstat -gc 4210 2s 3`
@@ -20,6 +20,7 @@
 * `ps -Lfp pid `
 * `ps -mp pid -o THREAD，tid，time `
 
+<<<<<<< HEAD
 ### OOM
 
 #### CodeCache
@@ -29,6 +30,9 @@
 ####64m
 
 ###jmap排查问题
+=======
+### jmap排查问题
+>>>>>>> 830e256b402d327fd21c5565a9615e3b64c2bf82
 
 * `jmap -dump:format=b,file=filename.hprof pid`:`这个命令执行，JVM会将整个heap的信息dump写入到一个文件，heap如果比较大的话，就会导致这个过程比较耗时，并且执行的过程中为了保证dump的信息是可靠的，所以会暂停应用`
 * `jmap -permstat`:`这个命令执行，JVM会去统计perm区的状况，这整个过程也会比较的耗时，并且同样也会暂停应用`
@@ -99,4 +103,6 @@
 * `java -agentlib:hprof[=options] ToBeProfiledClass`
 * `java -Xrunprof[:options] ToBeProfiledClass`
 * `javac -J-agentlib:hprof[=options] ToBeProfiledClass`
+
+### MAT分析dump
 
