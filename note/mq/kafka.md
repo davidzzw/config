@@ -1,36 +1,36 @@
-###事务
+### 事务
 
 ### 幂等
 
-###选举
+### 选举
 
 ### 操作
 
-####1 Create a topic
+#### 1 Create a topic
 
 `kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test`
 
-####2 Query list
+#### 2 Query list
 
 `kafka-topics.sh --list --zookeeper localhost:2181`
 
-####3 Send some messages
+#### 3 Send some messages
 
 `kafka-console-producer.sh --broker-list localhost:9092 --topic test`
 
-####4 Start a consumer
+#### 4 Start a consumer
 
 `kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning`
 
-####5 修改Topic
+#### 5 修改Topic
 
 `kafka-topics.sh --alter --zookeeper localhost:2181 --partitions 11 --topic Demo1`
 
-####6 删除指定Topic
+#### 6 删除指定Topic
 
 `kafka_2.12-0.11.0.0]# bin/kafka-topics.sh --delete --zookeeper localhost:2181 --topic Demo1 Note中指出该Topic并没有真正的删除，如果真删除，需要把server.properties中的delete.topic.enable置为true`
 
-####7 给指定的Topic增加配置项，如给一个增加max message size值为128000
+#### 7 给指定的Topic增加配置项，如给一个增加max message size值为128000
 
 `kafka-topics.sh --alter --zookeeper localhost:2181 --topic Demo1 --config max.message.bytes=128000 WARNING: Altering topic configuration from this script has been deprecated and may be removed in future releases`
 
@@ -47,7 +47,7 @@ __consumers_offsets partition# = Math.abs(groupId.hashCode() % groupMetadataTopi
 该分区leader所在的broker就是被选定的coordinator
 ```
 
-###协议
+### 协议
 
 ```
 Heartbeat请求：consumer需要定期给coordinator发送心跳来表明自己还活着
@@ -81,7 +81,7 @@ DescribeGroup请求：显示组的所有信息，包括成员信息，协议名�
 
 ### partition
 
-####segment
+#### segment
 
 ### ISR(In-Sync Replicas)
 
@@ -93,27 +93,27 @@ Controller来维护：Kafka集群中的其中一个Broker会被选举为Controll
 leader来维护：leader有单独的线程定期检测ISR中follower是否脱离ISR, 如果发现ISR变化，则会将新的ISR的信息返回到Zookeeper的相关节点中
 ```
 
-###OSR（Outof-Sync Replicas）
+### OSR（Outof-Sync Replicas）
 
 ### AR(Assigned Replicas)
 
 `AR=ISR+OSR`
 
-###LEO(LogEndOffset)
+### LEO(LogEndOffset)
 
 `每个partition的log最后一条Message的位置`
 
-###HW(HighWatermark)
+### HW(HighWatermark)
 
 `consumer能够看到的此partition的位置`
 
-###LSO
+### LSO
 
-###LEO
+### LEO
 
-###LW(Low Watermark)
+### LW(Low Watermark)
 
-###Log Retention
+###  Log Retention
 
 ### 性能指标
 

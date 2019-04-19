@@ -26,9 +26,14 @@
 
 #### 堆外内存
 
-####64m
+#### 64m
 
-### jmap排查问题
+### 死锁
+
+`jstack -l pid`或者`jcmd pid Thread.print`
+
+###  jmap排查问题
+
 * `jmap -dump:format=b,file=filename.hprof pid`:`这个命令执行，JVM会将整个heap的信息dump写入到一个文件，heap如果比较大的话，就会导致这个过程比较耗时，并且执行的过程中为了保证dump的信息是可靠的，所以会暂停应用`
 * `jmap -permstat`:`这个命令执行，JVM会去统计perm区的状况，这整个过程也会比较的耗时，并且同样也会暂停应用`
 * `jmap -histo:live pid`:`这个命令执行，JVM会先触发gc，然后再统计信息`
@@ -91,7 +96,7 @@
 
 * `jinfo -flag ReservedCodeCacheSize pid`
 
-###hprof（Heap/CPU Profiling Tool）
+### hprof（Heap/CPU Profiling Tool）
 
 `hprof能够展现CPU使用率，统计堆内存使用情况`
 
