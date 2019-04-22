@@ -10,7 +10,7 @@
 
 ### jvm参数
 
-####基本参数
+#### 基本参数
 
 * `-XX:+Xmx`: `设置堆内存的最大值`
 * `-XX:+Xms`:` 设置堆内存的初始值`
@@ -31,6 +31,12 @@
 * `-XX:TargetSurvivorRatio`:`如果单个 Survivor 区已经被占用了 50%,那么较高复制次数的对象也会被晋升至老年代 `
 * `-XX:ErrorFile`
 
+#### Diagnostic Options
+
+- `-XX:+PrintFlagsFinal(默认没有启用)`
+
+> 用于查看所有可设置的参数及最终值(`JDK 6 update 21开始才可以用`），默认是不包括diagnostic或experimental系的。如果要在-XX:+PrintFlagsFinal的输出里看到这两种参数的信息，分别需要显式指定-XX:+UnlockDiagnosticVMOptions / -XX:+UnlockExperimentalVMOptions(`-XX:+PrintCommandLineFlags 这个参数的作用是显示出VM初始化完毕后所有跟最初的默认值不同的参数及它们的值`)
+
 #### 编译
 
 * `-Xint`:`解释模式`
@@ -38,14 +44,27 @@
 * `-Xmixed`:`混合模式`
 * `-XX:+PrintInterpreter`:`为非编译的方法应用解释器`
 
+##### Compilation Policy Options
+
+* `-XX:CompileThreshold`:`方法触发编译时的调用次数，默认是10000`
+
+- `-XX:OnStackReplacePercentage`:`方法中循环执行部分代码的执行次数触发OSR编译时的阈值，默认是140`
+
 #### 堆外内存
 
 * `-XX:MaxDirectMemorySize `
 
 #### CodeCache
 
-* `-XX:ReservedCodeCacheSize` 
-* `-XX:InitialCodeCacheSize` 
+##### Codecache Size Options
+
+- `-XX:InitialCodeCacheSize`：`用于设置初始CodeCache大小`
+
+- `-XX:ReservedCodeCacheSize`:`用于设置Reserved code cache的最大大小，通常默认是240M`
+
+- `-XX:CodeCacheExpansionSize`:`用于设置code cache的expansion size，通常默认是64K`
+
+##### Codecache Flush Options
 
 * `-XX:+UseCodeCacheFlushing`：`启动CodeCache清理, 释放空间, 一定条件下会导致JIT被关闭 `
 
@@ -55,6 +74,9 @@
 ```
 
 ####PerfData(/tmp/hsperfdata_<user>/<pid>)
+- `-XX:+PrintCodeCache(默认没有启用)`:`-XX:+PrintCodeCache用于jvm关闭时输出code cache的使用情况`
+
+- `-XX:+PrintCodeCacheOnCompilation(默认没有启用)`:`用于在方法每次被编译时输出code cache的使用情`
 
 * `-XX:-UsePerfData`:`如果关闭了UsePerfData这个参数，那么jvm启动过程中perf memory都不会被创建，jvm运行过程中自然不会再将这些性能数据保存起来，默认情况是是打开的`
 
@@ -65,7 +87,7 @@
 * `-XX:+PerfDataSaveToFile`：`是否在进程退出的时候将PerfData里的数据保存到一个特定的文件里，文件路径由下面的参数指定，否则就在当前目录下`
 * `-XX:PerfDataSaveFile`：`指定保存PerfData文件的路径`
 
-####Safepoint
+#### Safepoint
 
 * `-XX:+PrintSafepointStatistics`
 * `-XX:+UseCountedLoopSafepoints`
@@ -86,7 +108,7 @@
 * `-XX:+TieredCompilation `:`开启分层编译模式 `
 * ` -XX:-UseCounterDecay`：`禁止JIT调用计数器衰减。默认情况下，每次GC时会对调用计数器进行砍半的操作，导致有些方法一直是个温热，可能永远都达不到C2编译的1万次的阀值`
 
-####日志相关
+#### 日志相关
 
 * `-XX:+PrintGCDetails`
 * `-XX:+PrintGCDateStamps`
@@ -122,8 +144,15 @@
 
 * `-XX:+PrintCompilation` :`确认某个方法有没有被JIT编译` 
 * `-XX:+PrintInlining`:`来打印编译过程中的内联情况 `
+* `-XX:MaxInlineLevel`:`针对嵌套调用的最大内联深度，默认为9`
 
-####RootType
+- `-XX:MaxInlineSize`:`方法可以被内联的最大bytecode大小，默认为35`
+
+- `-XX:MinInliningThreshold`:`方法可以被内联的最小调用次数，默认为250`
+
+- `-XX:+InlineSynchronizedMethods`:`是否允许内联synchronized methods，默认为true`
+
+####  RootType
 
 * `-XX:+UnlockDiagnosticVMOptions` 
 * `-XX:+PrintAssmbly`
@@ -142,7 +171,7 @@
 - `-XX:+CMSIncrementalMode`：`使用增量模式，比较适合单CPU`
 - `-XX:+CMSParallelRemarkEnabled `:`降低标记停顿 `
 
-#####线程
+##### 线程
 
 - `-XX:+ParallelCMSThreads`:`CMS默认启动的回收线程数目是(ParallelGCThreads+3)/4，如果你需要明确设定，可以通过-XX:+ParallelCMSThreads来设定，其中-XX:+ParallelGCThreads代表的年轻代的并发收集线程数目`
 
@@ -166,12 +195,12 @@
 - `-XX:CMSInitiatingOccupancyFraction`:` 判断当前老年代使用率是否大于阈值，则触发cms gc`
 - `-XX:CMSCompactWhenClearAllSoftRefs`:` 默认为true`
 
-#####YGC
+##### YGC
 
 * `-XX:CMSScavengeBeforeRemark `:`开启或关闭在 CMS-remark 阶段之前的清除（Young GC）尝试`
 * ​
 
-#####方法区
+##### 方法区
 
 - `-XX:+CMSClassUnloadingEnabled`：` 允许对元类数据进行回收`
 - `-XX:+CMSPermGenSweepingEnabled`:`是否会清理持久代`
@@ -180,14 +209,14 @@
 - `-XX:+CMSInitiatingPermOccupancyFraction `:`设置Perm Gen使用到达多少比率时触发 `
 - `-XX:+CMSClassUnloadingEnabled`:` 在使用CMS垃圾回收机制的时候是否启用类卸载功能,如果希望对永久代进行垃圾回收，可用设置标志-XX:+CMSClassUnloadingEnabled`
 
-#####可中断预清理
+##### 可中断预清理
 
 - `-XX:+CMSScheduleRemarkEdenSizeThreshold `:`新生代Eden区的内存使用量大于参数 `
 - `CMSScheduleRemarkEdenPenetration`
 - `CMSMaxAbortablePrecleanLoops`
 - `CMSMaxAbortablePrecleanTime`
 
-#####压缩
+##### 压缩
 
 - `-XX:+UseCMSCompactAtFullCollection`:`收集开关参数（默认就是开启的)，用于在CMS收集器进行FullGC完开启内存碎片的合并整理过程参数可以使 CMS 在垃圾收集完成后，进行一次内存碎片整理。内存碎片的整理并不是并发进行`
 - `-XX:+UseCMSCompactAtFullCollection `:`用于在Full GC之后增加一个碎片整理`
@@ -201,7 +230,7 @@
 
 * `-XX:+ParallelRefProcEnabled `:` 这个选项可以用HotSpot VM的任何一种垃圾回收器上，他会是用多个的引用处理线程，而不是单个线程。这个选项不会启用多线程运行方法的finalizer。他会使用很多线程去发现需要排队通知的finalizable对象`
 
-####循环预测（Loop Prediction）
+#### 循环预测（Loop Prediction）
 
 * `-XX:+UseLoopPredicate`
 
@@ -209,13 +238,13 @@
 
 * `-XX:+ScavengeBeforeFullGC `:`当它启用并且当前在使用 +UseParallelGC或+UseParallelOldGC时触发full GC就会先用PSScavenge来收集一次young gen（也就是做一次minor GC），然后再用PSMarkSweep（如果用+UseParallelOldGC）或PSParallelCompact（如果用+UseParallelOldGC）来收集一到多次全堆`
 
-####System.gc
+#### System.gc
 
 * `-XXnoSystemGC`
 * `-XXfullSystemGC`
 * `-XX:-UseCounterDecay`:`禁用计数器衰减的`
 
-####锁
+#### 锁
 
 * `-XX:-UseBiasedLocking`:`禁用偏向锁`
 
@@ -239,7 +268,7 @@
 
 `jcmd pid VM.flags`:`查看jvm启动参数`
 
-###查看停顿–安全点停顿日志
+### 查看停顿–安全点停顿日志
 
 要查看安全点停顿，可以打开安全点日志，通过设置JVM参数 `-XX:+PrintGCApplicationStoppedTime` 会打出系统停止的时间，添加`-XX:+PrintSafepointStatistics -XX:PrintSafepointStatisticsCount=1` 这两个参数会打印出详细信息，可以查看到使用偏向锁导致的停顿，时间非常短暂，但是争用严重的情况下，停顿次数也会非常多；
 
@@ -252,9 +281,153 @@
 如果在生产系统上要打开，再再增加下面四个参数： 
 `-XX:+UnlockDiagnosticVMOptions -XX: -DisplayVMOutput -XX:+LogVMOutput -XX:LogFile=/dev/shm/vm.log`
 
-打开Diagnostic（只是开放了更多的flag可选，不会主动激活某个flag），关掉输出VM日志到stdout，输出到独立文件,/dev/shm目录（内存文件系统）。
+打开Diagnostic（只是开放了更多的flag可选，不会主动激活某个flag），关掉输出VM日志到stdout，输出到独立文件,/dev/shm目录（内存文件系统）
 
-###示例一
+### 查看Code Cache的使用情况
+
+#### -XX:+PrintCodeCache
+
+```
+CodeHeap 'non-profiled nmethods': size=120032Kb used=2154Kb max_used=2160Kb free=117877Kb
+bounds [0x00000001178ea000, 0x0000000117b5a000, 0x000000011ee22000]
+CodeHeap 'profiled nmethods': size=120028Kb used=10849Kb max_used=11005Kb free=109178Kb
+bounds [0x00000001103b3000, 0x0000000110e73000, 0x00000001178ea000]
+CodeHeap 'non-nmethods': size=5700Kb used=1177Kb max_used=1239Kb free=4522Kb
+bounds [0x000000010fe22000, 0x0000000110092000, 0x00000001103b3000]
+total_blobs=5638 nmethods=4183 adapters=435
+compilation: enabled
+            stopped_count=0, restarted_count=0
+full_count=0
+```
+
+- jvm启动参数加上-XX:+PrintCodeCache，可以在jvm关闭时输出code cache的使用情况
+- 这里分了non-profiled nmethods、profiled nmethods、non-nmethods三部分来展示
+- 其中size就是限制的最大大小，used表示实际使用量，max_used就是使用大小的high water mark，free由size-used得来
+
+#### jcmd pid Compiler.codecache
+
+```
+/ # jcmd 1 Compiler.codecache
+1:
+CodeHeap 'non-profiled nmethods': size=120036Kb used=1582Kb max_used=1582Kb free=118453Kb
+bounds [0x00007f1e42226000, 0x00007f1e42496000, 0x00007f1e4975f000]
+CodeHeap 'profiled nmethods': size=120032Kb used=9621Kb max_used=9621Kb free=110410Kb
+bounds [0x00007f1e3acee000, 0x00007f1e3b65e000, 0x00007f1e42226000]
+CodeHeap 'non-nmethods': size=5692Kb used=1150Kb max_used=1198Kb free=4541Kb
+bounds [0x00007f1e3a75f000, 0x00007f1e3a9cf000, 0x00007f1e3acee000]
+total_blobs=5610 nmethods=4369 adapters=412
+compilation: enabled
+            stopped_count=0, restarted_count=0
+full_count=0
+```
+
+> 使用jcmd的Compiler.codecache也可以查看code cache的使用情况，输出跟-XX:+PrintCodeCache相同
+
+#### jcmd pid VM.native_memory
+
+```
+/ # jcmd 1 VM.native_memory
+1:
+
+Native Memory Tracking:
+
+Total: reserved=1928023KB, committed=231182KB
+-                 Java Heap (reserved=511488KB, committed=140288KB)
+                          (mmap: reserved=511488KB, committed=140288KB)
+
+-                     Class (reserved=1090832KB, committed=46608KB)
+                          (classes #8218)
+                          ( instance classes #7678, array classes #540)
+                          (malloc=1296KB #19778)
+                          (mmap: reserved=1089536KB, committed=45312KB)
+                          ( Metadata:   )
+                          (   reserved=40960KB, committed=39680KB)
+                          (   used=38821KB)
+                          (   free=859KB)
+                          (   waste=0KB =0.00%)
+                          ( Class space:)
+                          (   reserved=1048576KB, committed=5632KB)
+                          (   used=5190KB)
+                          (   free=442KB)
+                          (   waste=0KB =0.00%)
+
+-                   Thread (reserved=37130KB, committed=2806KB)
+                          (thread #36)
+                          (stack: reserved=36961KB, committed=2636KB)
+                          (malloc=127KB #189)
+                          (arena=42KB #70)
+
+-                     Code (reserved=248651KB, committed=15351KB)
+                          (malloc=963KB #4600)
+                          (mmap: reserved=247688KB, committed=14388KB)
+
+-                       GC (reserved=21403KB, committed=7611KB)
+                          (malloc=5419KB #9458)
+                          (mmap: reserved=15984KB, committed=2192KB)
+
+-                 Compiler (reserved=150KB, committed=150KB)
+                          (malloc=20KB #447)
+                          (arena=131KB #5)
+
+-                 Internal (reserved=3744KB, committed=3744KB)
+                          (malloc=1696KB #6416)
+                          (mmap: reserved=2048KB, committed=2048KB)
+
+-                     Other (reserved=24KB, committed=24KB)
+                          (malloc=24KB #2)
+
+-                   Symbol (reserved=10094KB, committed=10094KB)
+                          (malloc=7305KB #219914)
+                          (arena=2789KB #1)
+
+-   Native Memory Tracking (reserved=4130KB, committed=4130KB)
+                          (malloc=12KB #158)
+                          (tracking overhead=4119KB)
+
+-               Arena Chunk (reserved=177KB, committed=177KB)
+                          (malloc=177KB)
+
+-                   Logging (reserved=7KB, committed=7KB)
+                          (malloc=7KB #264)
+
+-                 Arguments (reserved=18KB, committed=18KB)
+                          (malloc=18KB #500)
+
+-                   Module (reserved=165KB, committed=165KB)
+                          (malloc=165KB #1699)
+
+-                 Safepoint (reserved=4KB, committed=4KB)
+                          (mmap: reserved=4KB, committed=4KB)
+
+-                   Unknown (reserved=4KB, committed=4KB)
+                          (mmap: reserved=4KB, committed=4KB)
+```
+
+> 使用jcmd的VM.native_memory也可以查看code cache的使用情况(`Code部分`)，Compiler部分为Memory tracking used by the compiler when generating code
+
+#### 使用MemoryPoolMXBean查看
+
+```
+  public void testGetCodeCacheUsage(){
+      ManagementFactory.getPlatformMXBeans(MemoryPoolMXBean.class)
+              .stream()
+              .filter(e -> MemoryType.NON_HEAP == e.getType())
+              .filter(e -> e.getName().startsWith("CodeHeap"))
+              .forEach(e -> {
+                  LOGGER.info("name:{},info:{}",e.getName(),e.getUsage());
+              });
+  }
+```
+
+> MemoryPoolMXBean包含了HEAP及NON_HEAP，其中code cache属于NON_HEAP，其输出如下：
+
+```
+12:21:10.728 [main] INFO com.example.CodeCacheTest - name:CodeHeap 'non-nmethods',info:init = 2555904(2496K) used = 1117696(1091K) committed = 2555904(2496K) max = 5836800(5700K)
+12:21:10.743 [main] INFO com.example.CodeCacheTest - name:CodeHeap 'profiled nmethods',info:init = 2555904(2496K) used = 1543808(1507K) committed = 2555904(2496K) max = 122908672(120028K)
+12:21:10.743 [main] INFO com.example.CodeCacheTest - name:CodeHeap 'non-profiled nmethods',info:init = 2555904(2496K) used = 319616(312K) committed = 2555904(2496K) max = 122912768(120032K)
+```
+
+### 示例一
 
 ```
 -XX:+UseParNewGC  
