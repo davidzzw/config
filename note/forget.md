@@ -23,3 +23,5 @@ wordcount
   4. WebSocket
   5. SSE（仅服务端到客户端单向）
   6. HTTP/2
+  
+  编译和运行区别
