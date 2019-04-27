@@ -223,6 +223,7 @@
 - `-XX:CMSFullGCsBeforeCompaction=0` :`而且默认就是开启且每次full gc后整理old区内存碎片问题 cms gc不会整理内存碎片，但是full gc会`
 - `-XX:+UseFullGCsBeforeCompaction`：`设定进行多少次CMS 垃圾回收后，进行一次内存压缩`
 - `-XX:+CMSScavengeBeforeRemark `:`开启或关闭在CMS重新标记阶段之前的清除（YGC）尝试,CMS remark阶段前会触发一次minor GC `
+- ` -XX:+UseCompressedOops`:`压缩指针，起到节约内存占用的新参数。解释器在解释字节码时，植入压缩指令（不影响正常和JVM优化后的指令顺序）。具体逻辑是，当对象被读取时，解压，存入heap时，压缩`
 
 #### G1相关参数
 

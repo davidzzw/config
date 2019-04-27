@@ -174,6 +174,25 @@ instanceKlass -> 方法区或者metaspace
 KlassKlass -> Class
 ```
 
+#### 对象大小
+
+计算方式：对象头+实例数据+对齐填充
+
+类型占用字节数(bytes)
+类型	64位（无压缩）	64位（压缩）
+boolean	1	1
+byte	1	1
+short	2	2
+char	2	2
+int	4	4
+float	4	4
+long	8	8
+double	8	8
+普通对象头	16	12
+数组对象头	24	16
+
+reference（引用类型）	8	4
+
 ### MetaSpace
 
 ```

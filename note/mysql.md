@@ -45,49 +45,33 @@ Record Lock、Gap Lock 和 Next-Key Lock
 
 binlog附加参数
 
- 
-
 max_binlog_size:
 
 设置binlog的最大存储上线，当日志达到该日志的上限时，mysql会重新创建一个日志开始记录，不过偶尔也会超出该设置的binlog，一般都是因为即将达到上限时候，产生了一个比较大的事物，为了保证事物的安全，mysql不会将同一个事物分开记录到两个binlog
-
- 
 
 binlog-do-db=db_name:
 
 明确告诉mysql，需要对某个数据库记录binlog，如果有了binlog-do-db=db_name  显示指定，mysql会忽略正对其他书库执行query，而仅仅记录只对指定数据库执行的query
 
- 
-
 binlog-ignore-db=db_name:
 
 显示的指定忽略某个数据库的binlog记录。
-
- 
 
  binlog-do-db 和binlog-ignore-db参数:
 
  有一个共同的概念，参数db_name 不是指query 语句更新的数据所在的数据库，而是执行query的时候，当前所处的数据库。不论更新哪个数据库的数据，mysql仅仅比较当前连接所处的数据库与参数设置的数据库名。而不会分析query语句所更新的数据库所在数据库。
 
- 
-
 binlog_cache_size :
 
 当使用事务的存储引擎InnoDB时，所有未提交的事务会记录到一个缓存中，等待事务提交时，直接将缓冲中的二进制日志写入二进制日志文件，而该缓冲的大小由binlog_cache_size决定，默认大小为32KB，此外，binlog_cache_size是基于回话的，也就是，当一个线程开始一个事务时，mysql会自动分配一个大小为binlog_cache_size的缓存，因此该值得设置需要相当小心，可以通过show global status 查看binlog_cache_use、binlog_cache_disk_use的状态，可以判断当前binlog_cache_size的设置是否合适。
-
- 
 
 sync_binlog:
 
 参数sync_binlog=[N]表示每写缓存多少次就同步到磁盘，如果将N设置为1，则表示采用同步写磁盘的方式来写二进制日志，该参数很重要，这个以后还会提到。值得注意的是，在将该参数设置为1时，也应该将innodb_support_xa设为1来解决，这可以确保二进制日志和InnoDB存储引擎数据文件的同步
 
- 
-
 expire_logs_days:
 
 定义了MySQL清楚过期日志的时间
-
- 
 
 二进制日志的开启方式：
 
@@ -100,23 +84,17 @@ mysqld_safe --user=mysql --log-bin=[path] &
 [mysqld]
 log-bin=[path]
 
- 
-
 log-bin= /var/log/mysql/mysql-bin.log    --指定二进制日志的名称
 
 log_bin_index= /var/log/mysql/mysql-bin.log.index     
 
 --二进制日志索引的名称
 
- 
-
 relay_log= /var/log/mysql/mysql-bin.relay    ---中继日志的名称
 
 relay_log_index= /var/log/mysql/mysql-bin.relay.index    
 
 ---中继日志索引的名称
-
- 
 
 二进制日志的查看方式：
 
@@ -140,13 +118,9 @@ show binary logs可以查看当前的二进制日志文件个数以及文件名
 
 | mysqlbin.000006 | 1074572441 
 
- 
-
 mysqlbinlog命令可以用来查看当前日志里面的内容
 
 如果执行FLUSH LOGS，log-bin 会使用新的二进制日志编号
-
- 
 
 **2.通用查询日志general_log**
 
@@ -166,11 +140,7 @@ general_log-file[=path/[filename]]   //=后面都是可选的，即有默认的�
 
 general_log=1     //表示开启通用查询日志
 
- 
-
 推荐使用第一种方式开启或关闭通用查询日志，因为my.cnf的修改要生效需要重启mysql服务，并且这种通用查询日志的开启不需要一直开启而是短时间开启就需要关闭，所以在   my.cnf关闭时又要重启mysql服务。
-
- 
 
 **3.错误日志err_log**
 
@@ -196,17 +166,11 @@ log_error=/PATH/TO/ERROR_LOG_FILENAME
 log_warnings=#
 设定是否将警告信息记录进错误日志。默认设定为1，表示启用；可以将其设置为0以禁用；而其值为大于1的数值时表示将新发起连接时产生的“失败的连接”和“拒绝访问”类的错误信息也记录进错误日志。
 
- 
-
 删除错误日志之后要想重建日志：
 
 在运行状态下删除错误日志文件后，mysql并不会自动创建日志文件，flush logs在重建加载日志的时候，如果文件不存在，则会自动创建，所以在删除错误日志之后，如果需要重建日志文件，需要在服务端执行以下命令：
 
 mysqladmin -uroot -p flush-logs
-
- 
-
- 
 
 **4.慢查询日志log-slow-queries**
 
@@ -222,15 +186,11 @@ mysql中慢查询日志默认是关闭的，
 
 启动慢查询时，需要在my.cnf文件中配置long_query_time选项指定记录阈值，如果某条查询语句的查询时间超过了这个值，这个查询过程将被记录到慢查询日志文件中。
 
- 
-
 **5.事务日志**
 
  Innodb主要是通过事务日志实现ACID特性
 
 事务日志包括：重做日志redo和回滚日志undo
-
- 
 
 事务日志文件名为"ib_logfile0"和“ib_logfile1”，默认存放在表空间所在目录，它是用来记录数据库更新情况的文件，它可以记录针对数据库的任何操作，并将记录的结果保存到独立的文件中。对于每一次数据库更新的过程，事务日志文件都有非常全面的记录。根据这些记录可以恢复数据库更新前的状态。
 
