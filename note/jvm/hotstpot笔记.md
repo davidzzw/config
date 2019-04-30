@@ -1,12 +1,18 @@
-#### 加载
+> arguments.cpp
+>
+> 
 
-#### 链接（验证、准备、解析） 
+### 类加载
 
-####初始化
+### 加载
+
+#### 链接（验证、准备、解析）
+
+#### 初始化
 
 `gcCause.hpp`
 
-#### 符号引用
+### 符号引用
 
 ```
 顺着这条线索把能传递引用到的常量池项都找出来，会看到（按深度优先顺序排列）：   #2 = Methodref          #3.#17         //  X.bar:()V
@@ -23,7 +29,7 @@
 标记为Utf8的常量池项在Class文件中实际为CONSTANT_Utf8_info，是以略微修改过的UTF-8编码的字符串文本。这样就清楚了对不对？由此可以看出，Class文件中的invokevirtual指令的操作数经过几层间接之后，最后都是由字符串来表示的。这就是Class文件里的“符号引用”的实态：带有类型（tag） / 结构（符号间引用层次）的字符串。
 ```
 
-#### 直接引用
+### 直接引用
 
 ```
 Sun Classic VM:（以32位Sun JDK 1.0.2在x86上为例）         HObject             ClassObject
@@ -53,9 +59,9 @@ Sun Classic VM:（以32位Sun JDK 1.0.2在x86上为例）         HObject       
 
 `符号引用通常是设计字符串的——用文本形式来表示引用关系。而直接引用是JVM（或其它运行时环境）所能直接使用的形式。它既可以表现为直接指针（如上面常量池项#2解析为methodblock*），也可能是其它形式（例如invokevirtual_quick指令里的vtable index）。关键点不在于形式是否为“直接指针”，而是在于JVM是否能“直接使用”这种形式的数据。`
 
-###栈
+### 栈
 
-####栈帧
+#### 栈帧
 
 `栈轨迹跟弹出方法栈帧 是两个概念`
 `调用栈`
@@ -64,11 +70,11 @@ Sun Classic VM:（以32位Sun JDK 1.0.2在x86上为例）         HObject       
 
 `存储了方法的局部变量表、操作数栈、动态连接、方法返回地址等信息`
 
-####局部变量表
+#### 局部变量表
 
-####操作数栈
+#### 操作数栈
 
-###jvm如何调用java方法
+### jvm如何调用java方法
 
 #### 入口：JavaCalls
 
@@ -88,25 +94,25 @@ Sun Classic VM:（以32位Sun JDK 1.0.2在x86上为例）         HObject       
 
 `这些指令与包含目标方法类名、方法名以及方法描述符的符号引用捆绑。在实际运行之前，Java 虚拟机将根据这个符号引用链接到具体的目标方法。`
 
-#####invokestatic
+##### invokestatic
 
 `用于调用类（静态）方法` 
 
-#####invokespecial
+##### invokespecial
 
 `用于调用实例方法，特化于super方法调用、private方法调用与构造器调用 `
 
-#####invokevirtual
+##### invokevirtual
 
 `用于调用一般实例方法（包括声明为final但不为private的实例方法）`
 
-#####invokeinterface
+##### invokeinterface
 
 `用于调用接口方法 `
 
-###间接调用
+### 间接调用
 
-####invokedynamic
+#### invokedynamic
 
 ##### 方法句柄（MethodHandle）
 
@@ -151,19 +157,19 @@ init.cpp
 
 ### 高级特性
 
-####方法内联（method inlining）
+#### 方法内联（method inlining）
 
-####逃逸分析（escape analysis）
+#### 逃逸分析（escape analysis）
 
-####标量替换（scalar replacement）
+#### 标量替换（scalar replacement）
 
-####无用代码削除（dead-code elimination）
+#### 无用代码削除（dead-code elimination）
 
-####解释执行
+#### 解释执行
 
-####即时执行
+#### 即时执行
 
-####静态绑定
+#### 静态绑定
 
 ### jvm 对象
 
@@ -255,7 +261,7 @@ HotSpot有一套私有API提供了对JVM内部数据结构的审视功能，称�
 * `-agentlib:agent-lib-name=options`
 * `-agentpath:path-to-agent=options`
 
-###Agent
+### Agent
 
 `Agent 是在 Java 虚拟机启动之时加载的，这个加载处于虚拟机初始化的早期，在这个时间点上：`
 
@@ -314,8 +320,45 @@ HotSpot有一套私有API提供了对JVM内部数据结构的审视功能，称�
 
 `将循环中的 if 语句外提至循环之前，并且在该 if 语句的两个分支中分别放置一份循环代码`
 
-#####循环剥离（loop peeling）
+##### 循环剥离（loop peeling）
 
 `将循环的前几个迭代或者后几个迭代剥离出循环的优化方式`
 
 #### 向量化
+
+
+
+### TLAB
+
+> TLAB的目的是在为新对象分配内存空间时，让每个Java应用线程能在使用自己专属的分配指针来分配空间，**均摊**对GC堆（eden区）里共享的分配指针做更新而带来的同步开销
+
+```
+TLAB简单来说本质上就是三个指针：start，top 和 end （实际实现中还有一些额外信息但这里暂不讨论）。
+其中 start 和 end 是占位用的，标识出 eden 里被这个 TLAB 所管理的区域，卡住eden里的一块空间说其它线程别来这里分配了哈。而 top 就是里面的分配指针，一开始指向跟 start 同样的位置，然后逐渐分配，直到再要分配下一个对象就会撞上 end 的时候就会触发一次 TLAB refill。
+要注意TLAB这个词其实有两层意思：一个是指存在管理Java线程的元数据对象 JavaThread 里的 ThreadLocalAllocBuffer对象，它持有上述三个指针，仅用于管理用而不存储对象自身；另一个是指在eden中分配出来的、被一个线程的ThreadLocalAllocBuffer所管理的一块空间，这才是实际存放对象的地方。本讨论不特地指出的时候会自由混用这两层意思，把它们当作一个整体来看待。
+TLAB refill包括下述几个动作：
+
+将当前TLAB抛弃（retire）掉。这个过程中最重要的动作是将TLAB末尾尚未分配给Java对象的空间（浪费掉的空间）分配成一个假的“filler object”（目前是用int[]作为filler object）。这是为了保持GC堆可以线性parse（heap parseability）用的。
+从eden新分配一块裸的空间出来（这一步可能会失败）
+将新分配的空间范围记录到ThreadLocalAllocBuffer里
+TLAB refill不成功（eden没有足够空间来分配这个新TLAB）就会触发YGC。
+
+注意“撞上”指的是在某次分配请求中，top + new_obj_size >= end 的情况，也就是说在被判定“撞上”的时候，top 常常离 end 还有一段距离，只是这之间的空间不足以满足新对象的分配请求 new_obj_size 的大小。这意味着在触发TLAB refill的时候，有可能会浪费掉位于该TLAB末尾的一部分空间：该TLAB已经占用了这块空间所以其它线程无法在这里分配Java对象，但该TLAB要refill的话它自己也不会在这块空间继续分配Java对象，从应用层面看这块空间就浪费了。
+每次分配TLAB的大小不是固定的，而是每个线程根据该线程启动开始到现在的历史统计信息来自己单独调整的。如果一个线程上跑的代码的内存分配速率非常高，则该线程会选择使用更大的TLAB以达到均摊同步开销的效果，反之亦然；同时它还会统计浪费比例，并且将其放入计算新TLAB大小的考虑因素当中，把浪费比例控制在一定范围内。
+GC很重要的一点是对heap parseability的依赖。GC做某些需要线性扫描堆里的对象的操作时，需要知道堆里哪些地方有对象而哪些地方是空洞。一种办法是使用外部数据结构，例如freelist或者allocation BitMap之类来记录哪里有空洞；另一种办法是把空洞部分也假装成有对象，这样GC在线性遍历时会看到一个“对象总是连续分配的”的假象，就可以以统一的方式来遍历：遍历到一个对象时，通过其对象头记录的信息找出该对象的大小，然后跳到该大小之后就可以找到下一个对象的对象头，依此类推。HotSpot选择的是后者的做法，假装成有对象的这种东西就叫做filler object（填充对象）
+```
+
+### PLAB
+
+```
+PLAB则是在old gen里分配的一种临时的结构
+promotion LAB
+在多GC线程并行做YGC的时候，大家都要为了晋升对象而在old gen里分配空间，于是old gen的分配指针就热起来了。大量的竞争会使得并行度降低，所以跟TLAB用同样的思路，old gen在处理YGC的晋升对象的分配也一样可以用（GC）线程私有的分配区。这就是PLAB。另外在CMS里old gen的剩余空间不是连续的，而是有很多空洞。这些剩余空间是通过freelist来管理的。
+```
+
+```
+freelist 
+bump pointer
+heap parseability
+```
+
