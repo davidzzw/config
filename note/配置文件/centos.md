@@ -30,9 +30,7 @@ done
 
 ls -lt | grep drwx | awk '{if(NR>10){print $9}}' | xargs -I {} rm -rf {}
 
-
-
-###内核文件系统
+### 内核文件系统
 
 ```
 l  /proc/sys/vm/dirty_expire_centisecs
@@ -43,7 +41,7 @@ l  /proc/sys/vm/dirty_ratio
 脏页率超过dirty_ratio指标会阻塞所有的写操作来进行Flush
 ```
 
-###linux下proc里关于磁盘性能的参数
+### linux下proc里关于磁盘性能的参数
 
 1、/proc/sys/vm/dirty_ratio
 这个参数控制文件系统的文件系统写缓冲区的大小，单位是百分比，表示系统内存的百分比，表示当写缓冲使用到系统内存多少的时候，开始向磁盘写出数据。增大之会使用更多系统内存用于磁盘写缓冲，也可以极大提高系统的写性能。但是，当你需要持续、恒定的写入场合时，应该降低其数值，：
@@ -121,15 +119,13 @@ l  /proc/sys/vm/dirty_ratio
 
 该文件表示系统进行交换行为的程度，数值（0-100）越高，越可能发生磁盘交换
 
-
-
 ### 零拷贝
 
 ### 用户态
 
 ### 内核态
 
-####Linux查看物理CPU个数、核数、逻辑CPU个数
+#### Linux查看物理CPU个数、核数、逻辑CPU个数
 
 ```
 # 总核数 = 物理CPU个数 X 每颗物理CPU的核数 

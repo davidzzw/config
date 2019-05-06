@@ -53,8 +53,6 @@
 
 ![img](https:////upload-images.jianshu.io/upload_images/10154499-5772dddedb909374.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/633/format/webp)
 
-image
-
 1. InnoDB使用的是聚簇索引，将**主键组织到一棵B+树**中，而**行数据就储存在叶子节点**上，若使用"where id = 14"这样的条件查找主键，则**按照B+树的检索算法即可查找到对应的叶节点，之后获得行数据**。
 2. 若**对Name列进行条件搜索，则需要两个步骤**：**第一步在辅助索引B+树中检索Name，到达其叶子节点获取对应的主键**。第二步**使用主键在主索引B+树种再执行一次B+树检索操作，最终到达叶子节点即可获取整行数据**。（**重点在于通过其他键需要建立辅助索引**）
 
@@ -213,9 +211,15 @@ select * from t where a=1 lock in share mode;属于当前读
 如引用一问题所说，T1 select 之后 update，会将 T2 中 insert 的数据一起更新，那么认为多出来一行，所以防不住幻读。看着说法无懈可击，但是其实是错误的，InnoDB 中设置了 快照读 和 当前读 两种模式，如果只有快照读，那么自然没有幻读问题，但是如果将语句提升到当前读，那么 T1 在 select 的时候需要用如下语法： select * from t for update (lock in share mode) 进入当前读，那么自然没有 T2 可以插入数据这一回事儿了。
 ```
 
+
+
 #### 可重复读实现
 
 
+
+read view
+
+两阶段提交
 
 ### mvcc
 
@@ -504,3 +508,4 @@ where id2 IS NULL
 
 ### 参数
 
+show binary logs
