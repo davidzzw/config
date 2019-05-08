@@ -219,7 +219,7 @@ select * from t where a=1 lock in share mode;属于当前读
 
 read view
 
-两阶段提交
+### 两阶段提交
 
 ### mvcc
 
