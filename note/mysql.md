@@ -139,6 +139,14 @@ MyISM使用的是非聚簇索引，**非聚簇索引的两棵B+树看上去没�
 
 `回到主键索引树搜索的过程`
 
+#### change buffer
+
+```
+innodb_change_buffer_max_size
+```
+
+
+
 ### 事务
 
 #### innodb事务
