@@ -310,6 +310,10 @@ Online DDL的过程是这样的：
 
 `mysqldump 使用参数single-transaction`
 
+merge
+
+purge
+
 ### mysql日志
 
 * 重做日志（redo log）
@@ -524,6 +528,12 @@ relay_log_space_limit=#
 max_relay_log_size={4096..1073741824}
 设定从服务器上中继日志的体积上限，到达此限度时其会自动进行中继日志滚动。此参数值为0时，mysqld将使用max_binlog_size参数同时为二进制日志和中继日志设定日志文件体积上限。作用范围为全局级别，可用于配置文件，属动态变量。
 
+### order by
+
+sort buffer
+
+归并排序
+
 ### 查询死锁
 
 ```
@@ -601,4 +611,21 @@ where id2 IS NULL
 
 ### 参数
 
-show binary logs
+### 查询语句
+
+> show binary logs
+>
+> select * from information_schema.`PROCESSLIST` where info is not null ORDER BY time desc
+>
+> show variables like "gener%"
+>
+> set global general_log=on
+>
+> show 【session|global】 status
+>
+> show global status like 'connections'
+>
+> show session status like 'InnoDB_rows%'
+>
+> show global status like 'Slow_queries'
+
