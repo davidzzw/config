@@ -407,3 +407,28 @@ bump pointer
 heap parseability
 ```
 
+### jfr
+
+**解锁jdk的商业特性**
+
+`jcmd pid VM.unlock_commercial_features`
+
+**打开JFR**
+
+`XX:+UnlockCommercialFeatures -XX:+FlightRecorder -Djavax.xml.parsers.SAXParserFactory=com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl`
+
+**启动JFR**
+
+`jcmd <PID> JFR.start name=test duration=60s settings=profile filename=output.jfr`
+
+**Dump JFR**
+
+`jcmd $PID JFR.dump name=abc,duration=120s filename=abc.jfr`
+
+**检查JFR状态**
+
+`jcmd $PID JFR.check name=abc,duration=120s`
+
+**停止JFR**
+
+`jcmd $PID JFR.stop name=abc,duration=120s`
