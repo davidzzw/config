@@ -624,6 +624,101 @@ sort buffer
 
 随机排序方法
 
+### join
+
+Index Nested-Loop Join(NLJ)
+Block Nested-Loop Join(BNL) 
+
+#### NLJ优化
+
+#### Multi-Range Read优化
+
+**MRR能够提升性能的核心**在于，这条查询语句在索引a上做的是一个范围查询（也就是说，这是一个多值查询），可以得到足够多的主键id。这样通过排序以后，再去主键索引查数据，才能体现出“顺序性”的优势
+
+1. 根据索引a， 定位到满足条件的记录， 将id值放入read_rnd_buffer中;
+2. 将read_rnd_buffer中的id进行递增排序；
+3. 排序后的id数组， 依次到主键id索引中查记录， 并作为结果返回。
+  select * from t1 where a>=1 and a<=100;
+  这里， read_rnd_buffer的大小是由read_rnd_buffer_size参数控制的。 如果步骤1
+  中， read_rnd_buffer放满了， 就会先执行完步骤2和3， 然后清空read_rnd_buffer。 之后继续找
+  索引a的下个记录， 并继续循环 
+
+另外需要说明的是， 如果你想要稳定地使用MRR优化的话， 需要设置set
+optimizer_switch="mrr_cost_based=off"。 （官方文档的说法， 是现在的优化器策略， 判断消耗
+的时候， 会更倾向于不使用MRR， 把mrr_cost_based设置为off， 就是固定使用MRR了。 ） 
+
+##### Batched Key Access
+
+set optimizer_switch='mrr=on,mrr_cost_based=off,batched_key_access=on' 
+
+#### BNL算法的优化 
+
+大表join操作虽然对IO有影响， 但是在语句执行结束后， 对IO的影响也就结束了。 但是，
+对Buffer Pool的影响就是持续性的， 需要依靠后续的查询请求慢慢恢复内存命中率。 
+
+为了减少这种影响， 你可以考虑增大join_buffer_size的值， 减少对被驱动表的扫描次数。
+也就是说， BNL算法对系统的影响主要包括三个方面：
+
+1. 可能会多次扫描被驱动表， 占用磁盘IO资源；
+2. 判断join条件需要执行M*N次对比（M、 N分别是两张表的行数） ， 如果是大表就会占用非常
+  多的CPU资源；
+3. 可能会导致Buffer Pool的热数据被淘汰， 影响内存命中率。 
+
+我们执行语句之前， 需要通过理论分析和查看explain结果的方式， 确认是否要使用BNL算法。 如
+果确认优化器会使用BNL算法， 就需要做优化。 优化的常见做法是， 给被驱动表的join字段加上
+索引， 把BNL算法转成BKA算法。 
+
+##### BNL转BKA
+
+一些情况下， 我们可以直接在被驱动表上建索引， 这时就可以直接转成BKA算法了。
+但是， 有时候你确实会碰到一些不适合在被驱动表上建索引的情况。 比如下面这个语句： 
+
+```
+select * from t1 join t2 on (t1.b=t2.b) where t2.b>=1 and t2.b<=2000
+```
+
+##### 加索引
+
+##### 临时表 
+
+这时候， 我们可以考虑使用临时表。 使用临时表的大致思路是：
+
+1. 把表t2中满足条件的数据放在临时表tmp_t中；
+
+2. 为了让join使用BKA算法， 给临时表tmp_t的字段b加上索引；
+
+3. 让表t1和tmp_t做join操作。
+  此时， 对应的SQL语句的写法如下：
+
+  ```
+  create temporary table temp_t(id int primary key, a int, b int, index(b))engine=innodb;
+  insert into temp_t select * from t2 where b>=1 and b<=2000;
+  select * from t1 join temp_t on (t1.b=temp_t.b);
+  ```
+
+  可以看到， 整个过程3个语句执行时间的总和还不到1秒， 相比于前面的1分11秒， 性能得到了大
+  幅提升。 接下来， 我们一起看一下这个过程的消耗：
+
+
+1. 执行insert语句构造temp_t表并插入数据的过程中， 对表t2做了全表扫描， 这里扫描行数是
+  100万。
+  create temporary table temp_t(id int primary key, a int, b int, index(b))engine=innodb;
+  insert into temp_t select * from t2 where b>=1 and b<=2000;
+  select * from t1 join temp_t on (t1.b=temp_t.b); 
+2. 之后的join语句， 扫描表t1， 这里的扫描行数是1000； join比较过程中， 做了1000次带索引
+  的查询。 相比于优化前的join语句需要做10亿次条件判断来说， 这个优化效果还是很明显
+  的。 
+
+#### 扩展-hash join 
+
+业务实现
+
+1. select * from t1;取得表t1的全部1000行数据， 在业务端存入一个hash结构， 比如C++里的
+  set、 PHP的dict这样的数据结构。
+2. select * from t2 where b>=1 and b<=2000; 获取表t2中满足条件的2000行数据。
+3. 把这2000行数据， 一行一行地取到业务端， 到hash结构的数据表中寻找匹配的数据。 满足
+  匹配的条件的这行数据， 就作为结果集的一行。 
+
 ### 查询死锁
 
 ```
