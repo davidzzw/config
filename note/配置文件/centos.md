@@ -134,3 +134,17 @@ cat /proc/$pid/smaps  | awk '/Size|Rss|Pss|Shared|Private|Referenced|Swap/{val_n
 第七列 dt：脏页数量
 ```
 
+### 释放cache
+
+```
+free -m
+sync
+
+echo 1 > /proc/sys/vm/drop_caches 仅清除页面缓存（PageCache）
+To free dentries and inodes:
+echo 2 > /proc/sys/vm/drop_caches 清除目录项和inode
+To free pagecache, dentries and inodes:
+echo 3 > /proc/sys/vm/drop_caches 清除页面缓存，目录项和inode
+As this is a non-destructive operation, and dirty objects are notfreeable, the user should run "sync" first in order to make sure allcached objects are freed.
+```
+

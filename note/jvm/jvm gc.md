@@ -132,17 +132,17 @@ CMS算法中提供了一个参数： CMSScavengeBeforeRemark，默认并没有�
 
 `重新扫描堆中的对象，进行可达性分析,标记活着的对象。这个阶段扫描的目标是：新生代的对象 + Gc Roots + 前面被标记为dirty的card对应的老年代对象。如果预清理的工作没做好，这一步扫描新生代的时候就会花很多时间，导致这个阶段的停顿时间过长。这个过程是多线程的。`
 
-#####6、并发清除
+##### 6、并发清除
 
 `用户线程被重新激活，同时将那些未被标记为存活的对象标记为不可达`
 
-#####7、并发重置
+##### 7、并发重置
 
 `CMS内部重置回收器状态，准备进入下一个并发回收周期`
 
-####主动Old GC
+#### 主动Old GC
 
-#####触发条件
+##### 触发条件
 
 ```
 YGC过程发生Promotion Failed，进而对老年代进行回收
@@ -178,14 +178,14 @@ System.gc()，前提是添加了-XX:+ExplicitGCInvokesConcurrent参数
 * `对cms的回收默认值有疑问的， 可以查看该方法https://github.com/dmlloyd/openjdk/blob/jdk9/jdk9/hotspot/src/share/vm/gc/cms/concurrentMarkSweepGeneration.cpp#L265`
 * `大家都知道对于设置使用cms回收器的，有一个background式的GC。（不清楚的可以查看笨神的这篇文章http://lovestblog.cn/blog/2015/05/07/system-gc/）`
 
-####CMS gc次数
+#### CMS gc次数
 
 ```
 CMS并发GC过程中出现了concurrent mode failure的话那么接下来就会做一次mark-sweep-compact的full GC，这个是完全stop-the-world的
 正是这个特征，使得CMS的每个并发GC周期总共会更新full GC计数器两次，initial mark与final re-mark各一次；如果出现concurrent mode failure，则接下来的full GC自己算一次
 ```
 
-####cms gc与full gc区别
+#### cms gc与full gc区别
 
 ```
 在CMS中，full gc 也叫 The foreground collector，对应的 cms gc 叫 The background collector，在真正执行 full gc 之前会判断一下 cms gc 的执行状态，如果 cms gc 正处于执行状态，调用report_concurrent_mode_interruption()方法，通知事件 concurrent mode failure
@@ -208,7 +208,7 @@ CMS GC要决定是否在full GC时做压缩，会依赖几个条件。其中，
 CMSFullGCsBeforeCompaction 说的是，在上一次CMS并发GC执行过后，到底还要再执行多少次full GC才会做压缩。默认是0，也就是在默认配置下每次CMS GC顶不住了而要转入full GC的时候都会做压缩。 把CMSFullGCsBeforeCompaction配置为10，就会让上面说的第一个条件变成每隔10次真正的full GC才做一次压缩（而不是每10次CMS并发GC就做一次压缩，目前VM里没有这样的参数）。这会使full GC更少做压缩，也就更容易使CMS的old gen受碎片化问题的困扰。 本来这个参数就是用来配置降低full GC压缩的频率，以期减少某些full GC的暂停时间。CMS回退到full GC时用的算法是mark-sweep-compact，但compaction是可选的，不做的话碎片化会严重些但这次full GC的暂停时间会短些；这是个取舍。
 ```
 
-#####CMSInitiatingOccupancyFraction=70和UseCMSInitiatingOccupancyOnly
+##### CMSInitiatingOccupancyFraction=70和UseCMSInitiatingOccupancyOnly
 
 ```
 两个设置一般配合使用,一般用于『降低CMS GC频率或者增加频率、减少GC时长』的需求
@@ -278,7 +278,7 @@ G1的年轻代回收做以下总结：
 > - 年轻代和年老代被同时回收
 > - 年老代区域基于它们的活性被选择
 
-###垃圾回收器
+### 垃圾回收器
 
 #### Serial收集器
 
@@ -333,7 +333,7 @@ UseFullGCsBeforeCompaction：设定进行多少次 CMS 垃圾回收后，进行�
 此外除了CMS的GC，其实其他针对old gen的回收器都会在对old gen回收的同时回收young gen
 ```
 
-####G1收集器
+#### G1收集器
 
 ```
 G1收集器是一款面向服务端应用的垃圾收集器。HotSpot团队赋予它的使命是在未来替换掉JDK1.5中发布的CMS收集器。与其他GC收集器相比，G1具备如下特点：
@@ -345,7 +345,7 @@ G1收集器是一款面向服务端应用的垃圾收集器。HotSpot团队赋�
 在使用G1收集器时，Java堆的内存布局和其他收集器有很大的差别，它将这个Java堆分为多个大小相等的独立区域，虽然还保留新生代和老年代的概念，但是新生代和老年代不再是物理隔离的了，它们都是一部分Region（不需要连续）的集合
 ```
 
-###永久代、metaspace
+### 永久代、metaspace
 
 ```
 在PermGen移除前，上述元数据对象都在PermGen里，直接被GC管理着。 
