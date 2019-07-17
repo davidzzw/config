@@ -638,10 +638,10 @@ Block Nested-Loop Join(BNL)
 1. 根据索引a， 定位到满足条件的记录， 将id值放入read_rnd_buffer中;
 2. 将read_rnd_buffer中的id进行递增排序；
 3. 排序后的id数组， 依次到主键id索引中查记录， 并作为结果返回。
-  select * from t1 where a>=1 and a<=100;
-  这里， read_rnd_buffer的大小是由read_rnd_buffer_size参数控制的。 如果步骤1
-  中， read_rnd_buffer放满了， 就会先执行完步骤2和3， 然后清空read_rnd_buffer。 之后继续找
-  索引a的下个记录， 并继续循环 
+    select * from t1 where a>=1 and a<=100;
+    这里， read_rnd_buffer的大小是由read_rnd_buffer_size参数控制的。 如果步骤1
+    中， read_rnd_buffer放满了， 就会先执行完步骤2和3， 然后清空read_rnd_buffer。 之后继续找
+    索引a的下个记录， 并继续循环 
 
 另外需要说明的是， 如果你想要稳定地使用MRR优化的话， 需要设置set
 optimizer_switch="mrr_cost_based=off"。 （官方文档的说法， 是现在的优化器策略， 判断消耗
@@ -661,7 +661,7 @@ set optimizer_switch='mrr=on,mrr_cost_based=off,batched_key_access=on'
 
 1. 可能会多次扫描被驱动表， 占用磁盘IO资源；
 2. 判断join条件需要执行M*N次对比（M、 N分别是两张表的行数） ， 如果是大表就会占用非常
-  多的CPU资源；
+    多的CPU资源；
 3. 可能会导致Buffer Pool的热数据被淘汰， 影响内存命中率。 
 
 我们执行语句之前， 需要通过理论分析和查看explain结果的方式， 确认是否要使用BNL算法。 如
@@ -688,7 +688,7 @@ select * from t1 join t2 on (t1.b=t2.b) where t2.b>=1 and t2.b<=2000
 2. 为了让join使用BKA算法， 给临时表tmp_t的字段b加上索引；
 
 3. 让表t1和tmp_t做join操作。
-  此时， 对应的SQL语句的写法如下：
+    此时， 对应的SQL语句的写法如下：
 
   ```
   create temporary table temp_t(id int primary key, a int, b int, index(b))engine=innodb;
@@ -701,23 +701,23 @@ select * from t1 join t2 on (t1.b=t2.b) where t2.b>=1 and t2.b<=2000
 
 
 1. 执行insert语句构造temp_t表并插入数据的过程中， 对表t2做了全表扫描， 这里扫描行数是
-  100万。
-  create temporary table temp_t(id int primary key, a int, b int, index(b))engine=innodb;
-  insert into temp_t select * from t2 where b>=1 and b<=2000;
-  select * from t1 join temp_t on (t1.b=temp_t.b); 
+    100万。
+    create temporary table temp_t(id int primary key, a int, b int, index(b))engine=innodb;
+    insert into temp_t select * from t2 where b>=1 and b<=2000;
+    select * from t1 join temp_t on (t1.b=temp_t.b); 
 2. 之后的join语句， 扫描表t1， 这里的扫描行数是1000； join比较过程中， 做了1000次带索引
-  的查询。 相比于优化前的join语句需要做10亿次条件判断来说， 这个优化效果还是很明显
-  的。 
+    的查询。 相比于优化前的join语句需要做10亿次条件判断来说， 这个优化效果还是很明显
+    的。 
 
 #### 扩展-hash join 
 
 业务实现
 
 1. select * from t1;取得表t1的全部1000行数据， 在业务端存入一个hash结构， 比如C++里的
-  set、 PHP的dict这样的数据结构。
+    set、 PHP的dict这样的数据结构。
 2. select * from t2 where b>=1 and b<=2000; 获取表t2中满足条件的2000行数据。
 3. 把这2000行数据， 一行一行地取到业务端， 到hash结构的数据表中寻找匹配的数据。 满足
-  匹配的条件的这行数据， 就作为结果集的一行。 
+    匹配的条件的这行数据， 就作为结果集的一行。 
 
 ###group by
 
@@ -1234,6 +1234,24 @@ MySQL中同样提供了一个类似的命令：
 
 当然了，这只是一个例子。你要使用这个方案的时候，还是应该在你的客户端代码中调用mysql_session_track_get_first这个函数。
 
+### 备份恢复
+
+```
+show master status
+show master logs
+show binlog events in 'mysql-bin.000002';
+```
+
+```
+mysqlbinlog --no-defaults mysql-bin.000002 --start-position="794" --stop-position="1055" | /usr/bin/mysql -uroot -p123456 test
+```
+
+mysqlbinlog常见的选项有以下几个：
+--start-datetime：从二进制日志中读取指定等于时间戳或者晚于本地服务器的时间
+--stop-datetime：从二进制日志中读取指定小于时间戳或者等于本地服务器的时间 取值和上述一样
+--start-position：从二进制日志中读取指定position 事件位置作为开始。
+--stop-position：从二进制日志中读取指定position 事件位置作为事件截至
+
 ### sql优化
 
 - `避免使用 IN 和 NOT IN`
@@ -1340,11 +1358,38 @@ start slave;
 
 查看binlog是否开启
 
+`show variables like 'log_bin'`
+
 设置binlog格式
 
 查看binlog日志
 
 `show binlog events`
 
+### GTID
+
+```
+show global variables like 'gtid_mode';
+set @@GLOBAL.GTID_MODE = OFF_PERMISSIVE;
+```
+
+生成一个新的binlog文件
+
+flush logs
+
+查看原有表字段 字符集
+
+show full columns from tablename
+
+修改表字符集
+
+alter table tableName convert to character set utf8mb4
+
+
+
+排查工具
+
+```
 hexdump 
+```
 
