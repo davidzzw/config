@@ -1356,6 +1356,8 @@ start slave;
 
 查看binlog是否开启
 
+`show variables like 'log_bin'`
+
 设置binlog格式
 
 查看binlog日志
@@ -1364,3 +1366,11 @@ start slave;
 
 hexdump 
 
+### GTID
+
+```
+show global variables like 'gtid_mode';
+set @@GLOBAL.GTID_MODE = OFF_PERMISSIVE;
+```
+
+flush logs

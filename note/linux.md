@@ -109,7 +109,7 @@ cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c
 ### 查看进程占内存
 
 ```
-top 　RES：进程占用的物理内存
+top RES：进程占用的物理内存
 pmap
 ps -e -o 'pid,comm,args,pcpu,rsz,vsz,stime,user,uid' | grep appName |  sort -nrk5
 ```
@@ -146,5 +146,25 @@ echo 2 > /proc/sys/vm/drop_caches 清除目录项和inode
 To free pagecache, dentries and inodes:
 echo 3 > /proc/sys/vm/drop_caches 清除页面缓存，目录项和inode
 As this is a non-destructive operation, and dirty objects are notfreeable, the user should run "sync" first in order to make sure allcached objects are freed.
+```
+
+### free
+
+```
+free -m ：查看内存情况，单位为MB。
+total 内存总数
+used 已经使用的内存数（我的程序使用内存数量+系统缓存使用的内数量）
+free 空闲的物理内存数（是真正的空闲，未被任何程序占用）
+shared 多个进程共享的内存总额
+buffers 磁盘缓存（Buffer Cache）的大小（可提高系统I/O调用的性能）
+cached  磁盘缓存（Page Cache）的大小（可提高系统I/O调用的性能）
+-buffers/cache 表示已被我们的程序使用的内存数，计算方法：used - buffers - cached
++buffers/cache 表示还可已被我使用的内存数，计算方法：free + buffers + cached
+```
+
+### 性能工具
+
+```
+stress sysstat
 ```
 
