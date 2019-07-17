@@ -1364,8 +1364,6 @@ start slave;
 
 `show binlog events`
 
-hexdump 
-
 ### GTID
 
 ```
@@ -1373,4 +1371,23 @@ show global variables like 'gtid_mode';
 set @@GLOBAL.GTID_MODE = OFF_PERMISSIVE;
 ```
 
+生成一个新的binlog文件
+
 flush logs
+
+查看原有表字段 字符集
+
+show full columns from tablename
+
+修改表字符集
+
+alter table tableName convert to character set utf8mb4
+
+
+
+排查工具
+
+```
+hexdump 
+```
+
