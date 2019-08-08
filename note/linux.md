@@ -116,15 +116,18 @@ ps -e -o 'pid,comm,args,pcpu,rsz,vsz,stime,user,uid' | grep appName |  sort -nrk
 
 ### 详细的内存使用情况
 
-```
-(1). pmap -d $pid 
-$pid 是正在运行的程序的pid
-(2). cat /proc/$pid/smaps
+#### pmap -d $pid
+
+#### cat /proc/$pid/smaps
 smaps的数据比较详细，可简单的归纳一下，归纳的命令如下：
+
 cat /proc/$pid/smaps  | awk '/Size|Rss|Pss|Shared|Private|Referenced|Swap/{val_name=gensub(/([a-zA-Z_]*).*/,"\\1",1,$1); list[val_name]+=$2; }END{for(val in list)print val,list[val];}' 
-(3). cat /proc/$pid/maps
-(4). cat /proc/$pid/statm
-输出解释
+
+#### cat /proc/$pid/maps
+
+#### cat /proc/$pid/statm
+
+```
 第一列  size:任务虚拟地址空间大小
 第二列  Resident：正在使用的物理内存大小
 第三列  Shared：共享页数
@@ -139,13 +142,12 @@ cat /proc/$pid/smaps  | awk '/Size|Rss|Pss|Shared|Private|Referenced|Swap/{val_n
 ```
 free -m
 sync
-
 echo 1 > /proc/sys/vm/drop_caches 仅清除页面缓存（PageCache）
 To free dentries and inodes:
 echo 2 > /proc/sys/vm/drop_caches 清除目录项和inode
 To free pagecache, dentries and inodes:
 echo 3 > /proc/sys/vm/drop_caches 清除页面缓存，目录项和inode
-As this is a non-destructive operation, and dirty objects are notfreeable, the user should run "sync" first in order to make sure allcached objects are freed.
+As this is a non-destructive operation, and dirty objects are notfreeable, the user should run "sync" first in order to make sure allcached objects are freed
 ```
 
 ### free
@@ -185,5 +187,36 @@ ulimit [-aHS][-c <core文件上限>][-d <数据节区大小>][-f <文件大小>]
 
 ```
 stress sysstat pstack pmap
+```
+
+#### pidstat
+
+`主要用于监控全部或指定进程占用系统资源的情况`
+
+```
+pidstat -p ALL---------------------------显示所有的进程统计信息，包括idle进程。
+pidstat -p ALL -t------------------------更加详细的显示了线程统计信息。
+pidstat [option] interval [count]-----周期采样和采样次数
+pidstat -p ALL -d
+```
+
+`pidstat -p ALL -t`
+
+```
+minflt/s: 每秒次缺页错误次数(minor page faults)，次缺页错误次数意即虚拟内存地址映射成物理内存地址产生的page fault次数。
+majflt/s: 每秒主缺页错误次数(major page faults)，当虚拟内存地址映射成物理内存地址时，相应的page在swap中，这样的page fault为major page fault，一般在内存使用紧张时产生。
+VSZ: 该进程使用的虚拟内存(以kB为单位)。
+RSS: 该进程使用的物理内存(以kB为单位)。
+%MEM: 该进程使用内存的百分比。
+Command: 拉起进程对应的命令。
+```
+
+`pidstat -p ALL -d`
+
+```
+kB_rd/s: 每秒进程从磁盘读取的数据量(以kB为单位)。
+kB_wr/s: 每秒进程向磁盘写的数据量(以kB为单位)。
+kB_ccwr/s:每秒进程被取消向磁盘写的数据量(以kB为单位)。
+Command: 拉起进程对应的命令。
 ```
 

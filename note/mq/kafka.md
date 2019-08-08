@@ -130,6 +130,8 @@ leader来维护：leader有单独的线程定期检测ISR中follower是否脱离
 *  `log.retention.minutes`
 *  `log.retention.ms`
 *  `file.delete.delay.ms`
+*  `replica.lag.time.max.ms`
+*  `min.insync.replicas`
 
 ### 面试题
 
