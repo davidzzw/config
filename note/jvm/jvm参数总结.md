@@ -1,4 +1,4 @@
-`所有参数在globals.hpp`
+`z所有参数在globals.hpp`
 
 ```
 垃圾收集器参数总结
@@ -198,7 +198,7 @@
 ##### YGC
 
 * `-XX:CMSScavengeBeforeRemark `:`开启或关闭在 CMS-remark 阶段之前的清除（Young GC）尝试`
-* ​
+* 
 
 ##### 方法区
 
@@ -255,7 +255,9 @@
 
 #### 时区
 
+#### 优化
 
+* `-XX:+UseLoopPredicate`
 
 ### 查看jvm启动参数
 

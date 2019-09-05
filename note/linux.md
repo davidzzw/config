@@ -220,3 +220,10 @@ kB_ccwr/s:每秒进程被取消向磁盘写的数据量(以kB为单位)。
 Command: 拉起进程对应的命令。
 ```
 
+/proc/meminfo vm.overcommit_memory
+
+`vm.overcommit_memory`的用处: 控制过量分配的策略. 这个参数一共有3个可选值:
+
+1.  `0`: Heuristic overcommit handling. 就是由操作系统自己决定过量分配策略
+2.  `1`: Always overcommit. 一直允许过量分配
+3.  `2`: Don't overcommit. 不允许过量分配
