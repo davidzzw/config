@@ -114,6 +114,44 @@ pmap
 ps -e -o 'pid,comm,args,pcpu,rsz,vsz,stime,user,uid' | grep appName |  sort -nrk5
 ```
 
+### 刷盘
+
+#### 一次正常的写流程
+
+一次写数据的典型流程（不考虑异常和其它特殊情况）
+
+1、数据在用户态的 buffer 中，调用 write 将数据传给内核
+
+2、数据在 Page Cache 中，返回写入的字节数（成功返回）
+
+3、内核将数据刷新到磁盘
+
+### Page Cache 的异步刷新
+
+1、脏页太多
+
+2、脏页太久
+
+```shell
+sysctl -a | grep dirty
+```
+
+- **dirty_writeback_centisecs** 表示多久唤醒一次刷新脏页的后台线程。这里的500表示５秒唤醒一次。
+
+-  **dirty_expire_centisecs** 表示脏数据多久会被刷新到磁盘上。这里的3000表示 30秒。
+
+-  **dirty_background_ratio** 表示当脏页占总内存的的百分比超过这个值时，后台线程开始刷新脏页。这个值如果设置得太小，可能不能很好地利用内存加速文件操作。如果设置得太大，则会周期性地出现一个写 IO 的峰值。
+-  **dirty_ratio** 当脏页占用的内存百分比超过此值时，内核会阻塞掉写操作，并开始刷新脏页。
+-  **dirty_background_bytes**、**dirty_bytes**  是和 dirty_background_ratio、dirty_ratio 表示同样意义的不同单位的表示。两者不会同时生效。
+
+作者：linjinhe
+
+链接：https://www.jianshu.com/p/ed5900d31f1f
+
+来源：简书
+
+简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
+
 ### 详细的内存使用情况
 
 #### pmap -d $pid
