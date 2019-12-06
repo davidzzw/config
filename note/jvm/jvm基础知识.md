@@ -45,7 +45,11 @@
 Code Cache代码缓存区，它主要用于存放JIT所编译的代码。CodeCache代码缓冲区的大小在client模式下默认最大是32m，在server模式下默认是48m，这个值也是可以设置的，它所对应的JVM参数为ReservedCodeCacheSize 和 InitialCodeCacheSize
 ```
 
-#### 运行时常量池
+#### 常量池
+
+##### class文件常量池
+
+##### 运行时常量池
 
 ```
 JDK1.6之前字符串常量池位于方法区之中。
@@ -58,6 +62,8 @@ JDK1.7字符串常量池已经被挪到堆之中。
 字面量：文本字符串、声明为final的常量值等。
 符号引用：类和接口的完全限定名（Fully Qualified Name）、字段的名称和描述符（Descriptor）、方法的名称和描述符。
 ```
+
+##### 字符串常量池
 
 #### 虚拟机栈(stack)
 
