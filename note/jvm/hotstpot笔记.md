@@ -137,6 +137,10 @@ invokedynamic 指令所执行的方法句柄能够内联
 
 `ConstantCallsite`
 
+### 指令
+
+**ldc指令**
+
 ### 进入HSDB
 
 `java -cp .;"%JAVA_HOME%/lib/sa-jdi.jar" sun.jvm.hotspot.HSDB`
