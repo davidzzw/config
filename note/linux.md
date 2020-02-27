@@ -2,19 +2,45 @@
 
 #### 上下文切换
 
-**进程上下文切换** **线程上下文切换**  **中断上下文切换**
+* **进程上下文切换** 
+
+* **线程上下文切换**
+
+* **3中断上下文切换**
+
+#### 排查
+
+#### 优化
 
 ### 内存
 
-### buffer 
+#### buffer 
 
-### cache
+#### cache
+
+#### 排查
+
+#### 优化
 
 ### io
 
+#### 模型
+
+#### 排查
+
+1.用top查看指标,发现 [系统] 有i/o瓶颈 或者 cpu瓶颈.
+2.使用iostat辅助看下磁盘i/o读写速度和大小等指标.
+3.用pidstat判断是哪个 [进程] 导致的. 既可以看进程各线程的cpu中断数,也可以看磁盘io数.
+4.用strace追踪进程及各线程的 [系统调用].(以前经常到这里就知道了是操作的什么文件)
+5.继续用lsof查看该进程打开的 [文件] .linux下一切皆文件,则可以查看的东西就很多很多了.连进程保持的socket等信息也一目了然
+
+#### 优化
+
 ### 网络
 
+#### 排查
 
+#### 优化
 
 
 
@@ -30,7 +56,7 @@ grant all on xxxx.* to 'root'@'%' identified by 'password' with grant option;
 -A INPUT -p tcp -m state --state NEW -m tcp --dport 8080 -j ACCEPT
 
 netstat -tln
-netstat -lnp|grep 88  
+netstat -lnp|grep 88
 netstat -nap 
 
 列出所有端口
@@ -164,14 +190,6 @@ sysctl -a | grep dirty
 -  **dirty_ratio** 当脏页占用的内存百分比超过此值时，内核会阻塞掉写操作，并开始刷新脏页。
 -  **dirty_background_bytes**、**dirty_bytes**  是和 dirty_background_ratio、dirty_ratio 表示同样意义的不同单位的表示。两者不会同时生效。
 
-作者：linjinhe
-
-链接：https://www.jianshu.com/p/ed5900d31f1f
-
-来源：简书
-
-简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
-
 ### 详细的内存使用情况
 
 #### pmap -d $pid
@@ -285,3 +303,12 @@ Command: 拉起进程对应的命令。
 1.  `0`: Heuristic overcommit handling. 就是由操作系统自己决定过量分配策略
 2.  `1`: Always overcommit. 一直允许过量分配
 3.  `2`: Don't overcommit. 不允许过量分配
+
+### 工具使用
+
+#### strace
+
+```
+-f表示跟踪子进程和子线程，-T表示显示系统调用的时长，-tt表示显示跟踪时间
+```
+

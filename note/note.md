@@ -12,6 +12,4 @@ sh configure --with-debug-level=slowdebug --with-target-bits=64 --with-jvm-varia
 sh configure --with-debug-level=slowdebug --with-target-bits=64 --with-jvm-variants=server --with-jdk-variant=normal --with-milestone=internal --with-freetype-include=/usr/local/include/freetype2 --with-freetype-lib=/usr/local/lib/ --enable-ccache
 
 bash ./configure  --with-freetype-include=/usr/local/include/freetype2 --with-freetype-lib=/usr/local/lib/
-
 ```
-

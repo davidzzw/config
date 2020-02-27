@@ -259,6 +259,14 @@
 
 * `-XX:+UseLoopPredicate`
 
+#### NMT
+
+`-XX:NativeMemoryTracking=[off | summary | detail]`
+
+`-XX:+UnlockDiagnosticVMOptions`
+
+ `-XX:+PrintNMTStatistics`
+
 ### 查看jvm启动参数
 
 `java -XX:+PrintFlagsFinal -version `:`查看jvm所有参数`
@@ -407,6 +415,10 @@ Total: reserved=1928023KB, committed=231182KB
 ```
 
 > 使用jcmd的VM.native_memory也可以查看code cache的使用情况(`Code部分`)，Compiler部分为Memory tracking used by the compiler when generating code
+
+#### Use jcmd to Access NMT Data
+
+`jcmd  VM.native_memory [summary | detail | baseline | summary.diff | detail.diff | shutdown] [scale= KB | MB | GB]`
 
 #### 使用MemoryPoolMXBean查看
 

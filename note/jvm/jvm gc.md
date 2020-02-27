@@ -6,7 +6,6 @@ a.虚拟机栈(栈桢中的本地变量表)中的引用的对象
 b.方法区中的类静态属性引用的对象 
 c.方法区中的常量引用的对象 
 d.本地方法栈中JNI的引用的对象
-
 Java 方法栈桢中的局部变量
 已加载类的静态变量
 JNI handles
@@ -403,7 +402,8 @@ HotSpot 给出的解决方案是一项叫做卡表（Card Table）的技术。�
 ### System.gc
 
 ```
-在HotSpot VM里，System.gc()默认触发的是一次full GC，stop-the-world，收集全堆。如果配置了+UseConcMarkSweepGC并且开启了+ExplicitGCInvokesConcurrent 或 -XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses，则System.gc()会触发一次CMS GC，并发模式，只收集old gen。如果开启了+DisableExplicitGC则System.gc()不执行任何GC就直接返回。 
+在HotSpot VM里，System.gc()默认触发的是一次full GC，stop-the-world，收集全堆。如果配置了+UseConcMarkSweepGC并且开启了+ExplicitGCInvokesConcurrent 或 
+-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses，则System.gc()会触发一次CMS GC，并发模式，只收集old gen。如果开启了+DisableExplicitGC则System.gc()不执行任何GC就直接返回。 
 通常HotSpot VM会立即执行System.gc()触发的GC。但如果调用System.gc()的时候有线程正在JNI critical section中（也就是执行了JNI的xxxCritical系函数GetStringCritical、GetPrimitiveArrayCritical，而还没释放定住的资源ReleaseStringCritical、ReleasePrimitiveArrayCritical时），则HotSpot VM会先记下这个请求并让System.gc()返回，然后等所有JNI critical section都退出后再补一次full GC。如果配置了+UseConcMarkSweepGC并且开启了+GCLockerInvokesConcurrent的话则这种延迟触发的GC会是CMS GC，并发模式，只收集old gen
 ```
 
@@ -411,4 +411,103 @@ HotSpot 给出的解决方案是一项叫做卡表（Card Table）的技术。�
 
 * ` promotion failed是说，担保机制确定老年代是否有足够的空间容纳新来的对象，如果担保机制说有，但是真正分配的时候发现由于碎片导致找不到连续的空间而失败`
 * `concurrent mode failure是指并发周期还没执行完，用户线程就来请求比预留空间更大的空间了，即后台线程的收集没有赶上应用线程的分配速度`
+
+### Java中的内存划分
+
+#### 程序计数器：（线程私有）
+
+```
+每个线程拥有一个程序计数器，在线程创建时创建，指向下一条指令的地址,执行本地方法时，其值为undefined
+```
+
+#### 虚拟机栈：（线程私有）
+
+```
+每个方法被调用的时候都会创建一个栈帧，用于存储局部变量表、操作栈、动态链接、方法出口等信息。局部变量表存放的是：编译期可知的基本数据类型、对象引用类型。
+每个方法被调用直到执行完成的过程，就对应着一个栈帧在虚拟机中从入栈到出栈的过程。
+在Java虚拟机规范中，对这个区域规定了两种异常情况：
+（1）如果线程请求的栈深度太深，超出了虚拟机所允许的深度，就会出现StackOverFlowError（比如无限递归。因为每一层栈帧都占用一定空间，而 Xss 规定了栈的最大空间，超出这个值就会报错）
+（2）虚拟机栈可以动态扩展，如果扩展到无法申请足够的内存空间，会出现OOM
+```
+
+#### 本地方法栈
+
+```
+（1）本地方法栈与java虚拟机栈作用非常类似，其区别是：java虚拟机栈是为虚拟机执行java方法服务的，而本地方法栈则为虚拟机执使用到的Native方法服务。
+（2）Java虚拟机没有对本地方法栈的使用和数据结构做强制规定，Sun HotSpot虚拟机就把java虚拟机栈和本地方法栈合二为一。
+（3）本地方法栈也会抛出StackOverFlowError和OutOfMemoryError。
+```
+
+#### 堆：即堆内存（线程共享）
+
+```
+（1）堆是java虚拟机所管理的内存区域中最大的一块，java堆是被所有线程共享的内存区域，在java虚拟机启动时创建，堆内存的唯一目的就是存放对象实例几乎所有的对象实例都在堆内存分配。
+（2）堆是GC管理的主要区域，从垃圾回收的角度看，由于现在的垃圾收集器都是采用的分代收集算法，因此java堆还可以初步细分为新生代和老年代。
+（3）Java虚拟机规定，堆可以处于物理上不连续的内存空间中，只要逻辑上连续的即可。在实现上既可以是固定的，也可以是可动态扩展的。如果在堆内存没有完成实例分配，并且堆大小也无法扩展，就会抛出OutOfMemoryError异常。
+```
+
+#### 方法区：（线程共享）
+
+```
+（1）用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。
+（2）Sun HotSpot虚拟机把方法区叫做永久代（Permanent Generation），方法区中最终要的部分是运行时常量池。
+```
+
+#### Code Cache
+
+```
+Code Cache代码缓存区，它主要用于存放JIT所编译的代码。CodeCache代码缓冲区的大小在client模式下默认最大是32m，在server模式下默认是48m，这个值也是可以设置的，它所对应的JVM参数为ReservedCodeCacheSize 和 InitialCodeCacheSize
+```
+
+#### 常量池
+
+##### class文件常量池
+
+##### 运行时常量池
+
+```
+JDK1.6之前字符串常量池位于方法区之中。
+JDK1.7字符串常量池已经被挪到堆之中。
+可通过参数-XX:PermSize和-XX:MaxPermSize设置
+常量池（Constant Pool）：常量池数据编译期被确定，是Class文件中的一部分。存储了类、方法、接口等中的常量，当然也包括字符串常量。
+字符串池/字符串常量池（String Pool/String Constant Pool）：是常量池中的一部分，存储编译期类中产生的字符串类型数据。
+运行时常量池（Runtime Constant Pool）：方法区的一部分，所有线程共享。虚拟机加载Class后把常量池中的数据放入到运行时常量池。常量池：可以理解为Class文件之中的资源仓库，它是Class文件结构中与其他项目资源关联最多的数据类型。
+常量池中主要存放两大类常量：字面量（Literal）和符号引用（Symbolic Reference）。
+字面量：文本字符串、声明为final的常量值等。
+符号引用：类和接口的完全限定名（Fully Qualified Name）、字段的名称和描述符（Descriptor）、方法的名称和描述符。
+```
+
+##### 字符串常量池
+
+#### 虚拟机栈(stack)
+
+```
+1.Java虚拟机栈是线程私有的，它的生命周期与线程相同。
+每一个方法被调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。
+虚拟机栈是执行Java方法的内存模型(也就是字节码)服务：每个方法在执行的同时都会创建一个栈帧，用于存储 局部变量表、操作数栈、动态链接、方法出口等信息。
+局部变量表：32位变量槽，存放了编译期可知的各种基本数据类型、对象引用、returnAddress类型。
+操作数栈：基于栈的执行引擎，虚拟机把操作数栈作为它的工作区，大多数指令都要从这里弹出数据、执行运算，然后把结果压回操作数栈。
+动态连接：每个栈帧都包含一个指向运行时常量池（方法区的一部分）中该栈帧所属方法的引用。持有这个引用是为了支持方法调用过程中的动态连接。Class文件的常量池中有大量的符号引用，字节码中的方法调用指令就以常量池中指向方法的符号引用为参数。这些符号引用一部分会在类加载阶段或第一次使用的时候转化为直接引用，这种转化称为静态解析。另一部分将在每一次的运行期间转化为直接应用，这部分称为动态连接
+方法出口：返回方法被调用的位置，恢复上层方法的局部变量和操作数栈，如果无返回值，则把它压入调用者的操作数栈。
+局部变量表所需的内存空间在编译期间完成分配，当进入一个方法时，这个方法需要在帧中分配多大的局部变量空间是完全确定的。
+在方法运行期间不会改变局部变量表的大小。主要存放了编译期可知的各种基本数据类型、对象引用 （reference类型）、returnAddress类型）。
+```
+
+### 类加载机制
+
+![image-20200225023731970](/Users/zhangzewei/Library/Application Support/typora-user-images/image-20200225023731970.png)
+
+```虚拟机把描述类的数据从Class文件加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的的Java类型，这就是虚拟机的类加载机制。```
+
+```
+虚拟机栈(JVM stack)中引用的对象(准确的说是虚拟机栈中的栈帧(frames)) 
+我们知道，每个方法执行的时候，jvm都会创建一个相应的栈帧(栈帧中包括操作数栈、局部变量表、运行时常量池的引用)，栈帧中包含这在方法内部使用的所有对象的引用(当然还有其他的基本类型数据)，当方法执行完后，该栈帧会从虚拟机栈中弹出，这样一来，临时创建的对象的引用也就不存在了，或者说没有任何gc roots指向这些临时对象，这些对象在下一次GC时便会被回收掉
+方法区中类静态属性引用的对象 
+静态属性是该类型(class)的属性，不单独属于任何实例，因此该属性自然会作为gc roots。只要这个class存在，该引用指向的对象也会一直存在。class 也是会被回收的，在面后说明
+本地方法栈(Native Stack)引用的对象
+一个class要被回收准确的说应该是卸载，必须同时满足以下三个条件
+堆中不存在该类的任何实例
+加载该类的classloader已经被回收
+该类的java.lang.Class对象没有在任何地方被引用，也就是说无法通过反射再带访问该类的信息
+```
 

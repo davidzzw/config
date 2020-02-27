@@ -38,10 +38,23 @@ kubectl exec -ti pod-name -c container-name /bin/bash
 
 ![查看容器的日志](D:\workdir\config\pic\查看容器的日志.png)
 
+```
+docker pull
+docker search
+docker ps
+docker images
+docker run -itd --name redis-test -p 6379:6379 redis
+docker exec -it redis-test /bin/bash
+```
 
 
-`nohup java -jar sentinel-dashboard.jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8005,server=y,suspend=y  --server.port=8082 &
- nohup java -jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8005,server=y,suspend=n web-0.0.1-SNAPSHOT.jar --server.port=18080 2>&1 > /dev/null &  `
+
+
+
+```
+nohup java -jar sentinel-dashboard.jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8005,server=y,suspend=y  --server.port=8082 &
+ nohup java -jar -Xdebug -Xrunjdwp:transport=dt_socket,address=8005,server=y,suspend=n web-0.0.1-SNAPSHOT.jar --server.port=18080 2>&1 > /dev/null &  
+```
 
 ### 命令
 
@@ -54,4 +67,3 @@ systemctl start kube-scheduler
 systemctl start kubelet
 systemctl start kube-proxy
 ```
-
